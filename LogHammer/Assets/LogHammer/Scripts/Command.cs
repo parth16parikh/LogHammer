@@ -16,4 +16,40 @@ public class MoveToCommand : Command
     {
         characterMovement.moveToPosition();
     }
-} 
+}
+
+public class MoveUpCommand : Command
+{
+
+    public override void Execute(CharacterMovement characterMovement)
+    {
+        characterMovement.moveUp();
+    }
+}
+
+public class MoveDownCommand : Command
+{
+
+    public override void Execute(CharacterMovement characterMovement)
+    {
+        characterMovement.moveDown();
+    }
+}
+
+public class MoveLeftCommand : Command
+{
+
+    public override void Execute(CharacterMovement characterMovement)
+    {
+        characterMovement.moveLeft();
+    }
+}
+
+public class MoveRightCommand : Command
+{
+
+    public override void Execute(CharacterMovement characterMovement)
+    {
+        characterMovement.moveRight();
+    }
+}
