@@ -19,7 +19,7 @@ public class InputHandler : MonoBehaviour
 
     private float m_doubleTapThreshold = 10f;
 
-    private TapInput m_tapInput;                                   //get the coordinated where the tap took place
+    private Tap m_tapInput;                                   //get the coordinated where the tap took place
 
     //constructor
     private InputHandler()
@@ -66,6 +66,16 @@ public class InputHandler : MonoBehaviour
 
     private void Update()
     {
+        int listSize = Input.touchCount;
+        List<Touch> touches;
+
+        touches = new List<Touch>(listSize);
+
+        for(int i = 0; i < listSize; i++)
+        {
+            touches.Add(Input.GetTouch(i));
+        }
+
         //detect tap
         if (Input.touchCount == 1)
         {
