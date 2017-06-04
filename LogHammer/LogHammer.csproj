@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\DoubleTaps.cs" />
     <Compile Include="Assets\Scripts\InputHandler.cs" />
+    <Compile Include="Assets\Scripts\TLTouch.cs" />
     <Compile Include="Assets\Scripts\TapInput.cs" />
     <Compile Include="Assets\Scripts\Temp.cs" />
     <Compile Include="Assets\Scripts\Temp2.cs" />
