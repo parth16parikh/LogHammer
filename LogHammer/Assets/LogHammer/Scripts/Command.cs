@@ -4,52 +4,54 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Command {
-
-    public abstract void Execute(CharacterMovement characterMovement);
+    public abstract void Execute(Character character);
 }
 
 
 public class MoveToCommand : Command
-{
-    
-    public override void Execute(CharacterMovement characterMovement)
+{  
+    public override void Execute(Character character)
     {
-        characterMovement.moveToPosition();
+        character.moveToPosition();
     }
 }
 
 public class MoveUpCommand : Command
 {
-
-    public override void Execute(CharacterMovement characterMovement)
+    public override void Execute(Character character)
     {
-        characterMovement.moveUp();
+        character.moveUp();
     }
 }
 
 public class MoveDownCommand : Command
 {
-
-    public override void Execute(CharacterMovement characterMovement)
+    public override void Execute(Character character)
     {
-        characterMovement.moveDown();
+        character.moveDown();
     }
 }
 
 public class MoveLeftCommand : Command
 {
-
-    public override void Execute(CharacterMovement characterMovement)
+    public override void Execute(Character character)
     {
-        characterMovement.moveLeft();
+        character.moveLeft();
     }
 }
 
 public class MoveRightCommand : Command
 {
-
-    public override void Execute(CharacterMovement characterMovement)
+    public override void Execute(Character character)
     {
-        characterMovement.moveRight();
+        character.moveRight();
+    }
+}
+
+public class StopMovementCommand : Command
+{
+    public override void Execute(Character character)
+    {
+        character.stopMovement();
     }
 }
