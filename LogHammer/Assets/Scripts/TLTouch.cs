@@ -4,24 +4,11 @@ using UnityEngine;
 
 public class TLTouch
 {
-    //copy constructor
-    public TLTouch(TLTouch tlTouch)
-    {
-        startPosition = tlTouch.startPosition;
-        endPosition = tlTouch.endPosition;
-        startTime = tlTouch.startTime;
-        endTime = tlTouch.endTime;
-        holdTime = tlTouch.holdTime;
-    }
-
-    public TLTouch()
-    {
-    }
-
     //stores all the basic information about a particular touch
     private Vector2 startPosition, endPosition;
     private float startTime, endTime, holdTime, holdDistance;
     private Vector2 holdVector;
+    private SwipeDirection swipeDirection;
 
     //define the properties of above private variables
     public Vector2 StartPosition
@@ -71,7 +58,7 @@ public class TLTouch
             endTime = value;
         }
     }
-    
+
     public Vector2 HoldVector
     {
         set
@@ -106,6 +93,33 @@ public class TLTouch
         {
             holdDistance = value;
         }
+    }
+
+    public SwipeDirection PSwipeDirection
+    {
+        set
+        {
+            swipeDirection = value;
+        }
+        get
+        {
+            return swipeDirection;
+        }
+    }
+
+    //copy constructor
+    public TLTouch(TLTouch tlTouch)
+    {
+        startPosition = tlTouch.startPosition;
+        endPosition = tlTouch.endPosition;
+        startTime = tlTouch.startTime;
+        endTime = tlTouch.endTime;
+        holdTime = tlTouch.holdTime;
+    }
+
+    //default constructor
+    public TLTouch()
+    {
     }
 
     public void SetTouchStartInfo(Vector2 startPos, float startTime)

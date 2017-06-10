@@ -83,7 +83,6 @@
     <Compile Include="Assets\Scripts\TLTouch.cs" />
     <Compile Include="Assets\Scripts\TapInput.cs" />
     <Compile Include="Assets\Scripts\Temp.cs" />
-    <Compile Include="Assets\Scripts\Temp2.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Huge Mocap Animation Library\READTHIS.txt" />

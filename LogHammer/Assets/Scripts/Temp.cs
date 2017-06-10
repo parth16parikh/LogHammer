@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Temp : MonoBehaviour
 {
@@ -17,9 +18,9 @@ public class Temp : MonoBehaviour
     }
 
     //Function that got registered
-    private void Instance_Tap()
+    private void Instance_Tap(TLTouch currentTouch)
     {
-        print("Instance_Tap is called");
+        Debug.Log("Instance_Tap is called");
     }
 
 }

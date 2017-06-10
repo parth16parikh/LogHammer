@@ -3,30 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-//This class will handle all the touch inputs via events. It is a singleton class. Register to events by subscribing to them.
+//Declare an enum to indicate the values of Directional Swipe
+public enum SwipeDirection
+{
+    None,
+    Up,
+    Down,
+    Left,
+    Right
+};
+
+//This class will handle all the touch inputs via events. It is a singleton class. Register to events by subscribing to them. Note that
+//when you register any functions to any of the public events, it has a parameter "TLTouch"
 public class InputHandler : MonoBehaviour
 {
-    public enum SwipeDirection
-    {
-        NONE,
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT
-    };
-
     //declaring a variable instance
     private static InputHandler instance;
-    public delegate void Inputs();
+    public delegate void Inputs(TLTouch touch);
 
     //whether multi-touch is enabled
-    public bool EnableMultiTouch;
+    public bool m_enableMultiTouch;
 
     //declare all the public Events
     public event Inputs Tap;
     public event Inputs DoubleTaps;
-    public event Inputs Drag;
-    public event Inputs Swipe;
+    public event Inputs DirectionalSwipe;
+    public event Inputs GeneralSwipe;
     public event Inputs Hold;
 
     //temperory text for testing
@@ -36,7 +38,7 @@ public class InputHandler : MonoBehaviour
     private float m_doubleTapTimeThreshold = 0.5f;
     private float m_tapRadiusThreshold = 60f;
     private float m_tapHoldTimeThreshold = 0.3f;
-    private float m_swipeWidth = 60f;
+    private float m_swipeWidth = 120f;
     private float m_swipeHoldTimeThreshold = 0.5f;
     private float m_swipeDistanceThreshold = 80f;
     private float m_dragHoldThreshold;
@@ -64,83 +66,146 @@ public class InputHandler : MonoBehaviour
         }
     }
 
-    //call the tap event. All the methods susbscribed to Tap will be called.
-    public void OnTap()
-    {
-        if (Tap != null)
-            Tap();
-    }
-
-    //call the double tap event. All the methods susbscribed to DoubleTap will be called.
-    public void OnDoubleTap()
-    {
-        if (DoubleTaps != null)
-            DoubleTaps();
-    }
-
+    //Called when the object gets created
     public void Start()
     {
         m_currentTouch = new TLTouch();
         m_previousTouch = new TLTouch();
+        if (m_enableMultiTouch)
+            Input.multiTouchEnabled = false;
+    }
+
+    //calling the tap event. All the methods susbscribed to Tap will be called.
+    public void OnTap(TLTouch currentTouch)
+    {
+        if (Tap != null)
+            Tap(currentTouch);
+    }
+
+    //calling the double tap event. All the methods susbscribed to DoubleTap will be called.
+    public void OnDoubleTap(TLTouch currentTouch)
+    {
+        if (DoubleTaps != null)
+            DoubleTaps(currentTouch);
+    }
+
+    //calling the General swipe event. All the methods subscribed to GeneralSwipe will be called.
+    public void OnGeneralSwipe(TLTouch currentTouch)
+    {
+        if (GeneralSwipe != null)
+            GeneralSwipe(currentTouch);
+    }
+
+    //calling the Directional swipe event. All the methods subscribed to DirectionalSwipe will be called.
+    public void OnDirectionalSwipe(TLTouch currentTouch)
+    {
+        if (DirectionalSwipe != null)
+            DirectionalSwipe(currentTouch);
+    }
+
+    //calling the Hold event. All the methods subscribed to Hold will be called.
+    public void OnHold(TLTouch currentTouch)
+    {
+        if (Hold != null)
+            OnHold(currentTouch);
     }
 
     //Called Every frame
     private void Update()
     {
-        if (Input.touchCount == 1)
+        if (Input.touchCount == 0)
+            return;
+
+        //Detect single touch events
+        Touch touch = Input.GetTouch(0);
+
+        //touch begins...
+        if (touch.phase == TouchPhase.Began)
         {
-            Touch touch = Input.GetTouch(0);
-
-            if (touch.phase == TouchPhase.Began)
-            {
-                m_currentTouch.SetTouchStartInfo(touch.position, Time.time);
-            }
-
-            if (touch.phase == TouchPhase.Ended)
-            {
-                m_currentTouch.SetTouchEndInfo(touch.position, Time.time);
-
-                float timeDifferenceBetweenTaps = m_currentTouch.EndTime - m_previousTouch.EndTime;
-                float distanceBetweenTaps = Vector2.Distance(m_currentTouch.EndPosition, m_previousTouch.EndPosition);
-                
-                if (timeDifferenceBetweenTaps <= m_doubleTapTimeThreshold && distanceBetweenTaps <= m_tapRadiusThreshold && m_currentTouch.HoldDistance <= m_tapRadiusThreshold && m_previousTouch.HoldDistance <= m_tapRadiusThreshold)
-                {
-                    text.text = "Double Tap";
-                    OnDoubleTap();
-                }
-                else if (m_currentTouch.HoldTime < m_tapHoldTimeThreshold && m_currentTouch.HoldDistance <= m_tapRadiusThreshold)
-                {
-                    text.text = "Tap event";
-                    OnTap();
-                }
-                if (m_currentTouch.HoldTime <= m_swipeHoldTimeThreshold && m_currentTouch.HoldDistance >= m_swipeDistanceThreshold)
-                {
-                    Vector2 swipeData = m_currentTouch.HoldVector;
-
-                    bool swipeIsVertical = Mathf.Abs(swipeData.x) < m_swipeWidth;
-                    bool swipeIsHorizontal = Mathf.Abs(swipeData.y) < m_swipeWidth;
-
-                    if (swipeData.y > 0f && swipeIsVertical)
-                        text.text = "UP";
-
-                    if (swipeData.y < 0f && swipeIsVertical)
-                        text.text = "DOWN";
-
-                    if (swipeData.x > 0f && swipeIsHorizontal)
-                        text.text = "RIGHT";
-
-                    if (swipeData.x < 0f && swipeIsHorizontal)
-                        text.text = "LEFT";
-                }
-
-                if (m_currentTouch.HoldTime >= m_holdThresholdMinimum && m_currentTouch.HoldTime <= m_holdThresholdMaximum && m_currentTouch.HoldDistance <= m_tapRadiusThreshold)
-                {
-                    text.text = "HOLD";
-                }
-                //if(m_currentTouch.m_holdTime >= m_dragHoldThreshold && Vector2.Distance(m_c))
-                m_previousTouch = new TLTouch(m_currentTouch);
-            }
+            m_currentTouch.SetTouchStartInfo(touch.position, Time.time);
         }
+
+        //touch ends...
+        else if (touch.phase == TouchPhase.Ended)
+        {
+            //setting the properties in m_currentTouch
+            m_currentTouch.SetTouchEndInfo(touch.position, Time.time);
+
+            //calculating differences needed for carrying out comparisions
+            float timeDifferenceBetweenTaps = m_currentTouch.EndTime - m_previousTouch.EndTime;
+            float distanceBetweenTaps = Vector2.Distance(m_currentTouch.EndPosition, m_previousTouch.EndPosition);
+
+            //detect double tap, if any
+            if (m_currentTouch.HoldTime < m_tapHoldTimeThreshold && m_currentTouch.HoldDistance <= m_tapRadiusThreshold)
+            {
+                text.text = "Tap event";
+
+                //Single tap event
+                OnTap(m_currentTouch);
+            }
+            else if (timeDifferenceBetweenTaps <= m_doubleTapTimeThreshold && distanceBetweenTaps <= m_tapRadiusThreshold && m_currentTouch.HoldDistance <= m_tapRadiusThreshold && m_previousTouch.HoldDistance <= m_tapRadiusThreshold)
+            {
+                text.text = "Double Tap";
+
+                //Double tap event
+                OnDoubleTap(m_currentTouch);
+            }
+            //detect swipe, if any
+            else if (m_currentTouch.HoldTime <= m_swipeHoldTimeThreshold && m_currentTouch.HoldDistance >= m_swipeDistanceThreshold)
+            {
+                Vector2 swipeData = m_currentTouch.HoldVector;
+
+                //General Swipe event
+                OnGeneralSwipe(m_currentTouch);
+
+                bool swipeIsVertical = Mathf.Abs(swipeData.x) < m_swipeWidth;
+                bool swipeIsHorizontal = Mathf.Abs(swipeData.y) < m_swipeWidth;
+
+                if (swipeIsVertical && swipeData.y > 0f)
+                {
+                    text.text = "UP";
+                    m_currentTouch.PSwipeDirection = SwipeDirection.Up;
+                }
+                else if (swipeIsVertical && swipeData.y < 0f)
+                {
+                    text.text = "DOWN";
+                    m_currentTouch.PSwipeDirection = SwipeDirection.Down;
+                }
+                else if (swipeIsHorizontal && swipeData.x > 0f)
+                {
+                    text.text = "RIGHT";
+                    m_currentTouch.PSwipeDirection = SwipeDirection.Right;
+                }
+                else if (swipeIsHorizontal && swipeData.x < 0f)
+                {
+                    text.text = "LEFT";
+                    m_currentTouch.PSwipeDirection = SwipeDirection.Left;
+                }
+                else
+                {
+                    text.text = "NONE";
+                    m_currentTouch.PSwipeDirection = SwipeDirection.None;
+                }
+
+                //Directional Swipe Event
+                OnDirectionalSwipe(m_currentTouch);
+            }
+            else if (m_currentTouch.HoldTime >= m_holdThresholdMinimum && m_currentTouch.HoldTime <= m_holdThresholdMaximum && m_currentTouch.HoldDistance <= m_tapRadiusThreshold)
+            {
+                text.text = "HOLD";
+
+                //Hold event
+                OnHold(m_currentTouch);
+            }
+            else
+            {
+                m_currentTouch.PSwipeDirection = SwipeDirection.None;
+            }
+
+            //if (m_currentTouch.m_holdTime >= m_dragHoldThreshold && Vector2.Distance(m_c))
+            m_previousTouch = new TLTouch(m_currentTouch);
+        }
+
 
         ////detect doubletap, zoom in and zoom out events since all these 
         //if (Input.touchCount >= 2)
