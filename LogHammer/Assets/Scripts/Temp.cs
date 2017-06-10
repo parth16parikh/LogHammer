@@ -8,7 +8,9 @@ public class Temp : MonoBehaviour
     void OnEnable()
     {
         //Subscribe to the Tap event
+        Debug.Log("Inside the OnEnable!");
         InputHandler.Instance.Tap += Instance_Tap;
+        Debug.Log("Logging after subscribing");
     }
 
     void OnDisable()
@@ -18,7 +20,7 @@ public class Temp : MonoBehaviour
     }
 
     //Function that got registered
-    private void Instance_Tap(TLTouch currentTouch)
+    public void Instance_Tap(TLTouch currentTouch)
     {
         Debug.Log("Instance_Tap is called");
     }

@@ -19,17 +19,17 @@ public class InputHandler : MonoBehaviour
 {
     //declaring a variable instance
     private static InputHandler instance;
-    public delegate void Inputs(TLTouch touch);
+    public delegate void InputEvents(TLTouch currentTouch);
 
     //whether multi-touch is enabled
     public bool m_enableMultiTouch;
 
     //declare all the public Events
-    public event Inputs Tap;
-    public event Inputs DoubleTaps;
-    public event Inputs DirectionalSwipe;
-    public event Inputs GeneralSwipe;
-    public event Inputs Hold;
+    public event InputEvents Tap;
+    public event InputEvents DoubleTaps;
+    public event InputEvents DirectionalSwipe;
+    public event InputEvents GeneralSwipe;
+    public event InputEvents Hold;
 
     //temperory text for testing
     public Text text;
@@ -64,6 +64,15 @@ public class InputHandler : MonoBehaviour
             }
             return instance;
         }
+        set
+        {
+            instance = value;
+        }
+    }
+
+    private void Awake()
+    {
+        Instance = this;
     }
 
     //Called when the object gets created
@@ -76,39 +85,43 @@ public class InputHandler : MonoBehaviour
     }
 
     //calling the tap event. All the methods susbscribed to Tap will be called.
-    public void OnTap(TLTouch currentTouch)
+    public void OnTap()
     {
+        Debug.Log("Inside the OnTap()");
         if (Tap != null)
-            Tap(currentTouch);
+        {
+            Debug.Log("Inside the IF condition");
+            Tap(m_currentTouch);
+        }
     }
 
-    //calling the double tap event. All the methods susbscribed to DoubleTap will be called.
-    public void OnDoubleTap(TLTouch currentTouch)
-    {
-        if (DoubleTaps != null)
-            DoubleTaps(currentTouch);
-    }
+    ////calling the double tap event. All the methods susbscribed to DoubleTap will be called.
+    //public void OnDoubleTap(TLTouch currentTouch)
+    //{
+    //    if (DoubleTaps != null)
+    //        DoubleTaps(currentTouch);
+    //}
 
-    //calling the General swipe event. All the methods subscribed to GeneralSwipe will be called.
-    public void OnGeneralSwipe(TLTouch currentTouch)
-    {
-        if (GeneralSwipe != null)
-            GeneralSwipe(currentTouch);
-    }
+    ////calling the General swipe event. All the methods subscribed to GeneralSwipe will be called.
+    //public void OnGeneralSwipe(TLTouch currentTouch)
+    //{
+    //    if (GeneralSwipe != null)
+    //        GeneralSwipe(currentTouch);
+    //}
 
-    //calling the Directional swipe event. All the methods subscribed to DirectionalSwipe will be called.
-    public void OnDirectionalSwipe(TLTouch currentTouch)
-    {
-        if (DirectionalSwipe != null)
-            DirectionalSwipe(currentTouch);
-    }
+    ////calling the Directional swipe event. All the methods subscribed to DirectionalSwipe will be called.
+    //public void OnDirectionalSwipe(TLTouch currentTouch)
+    //{
+    //    if (DirectionalSwipe != null)
+    //        DirectionalSwipe(currentTouch);
+    //}
 
-    //calling the Hold event. All the methods subscribed to Hold will be called.
-    public void OnHold(TLTouch currentTouch)
-    {
-        if (Hold != null)
-            OnHold(currentTouch);
-    }
+    ////calling the Hold event. All the methods subscribed to Hold will be called.
+    //public void OnHold(TLTouch currentTouch)
+    //{
+    //    if (Hold != null)
+    //        OnHold(currentTouch);
+    //}
 
     //Called Every frame
     private void Update()
@@ -141,14 +154,14 @@ public class InputHandler : MonoBehaviour
                 text.text = "Tap event";
 
                 //Single tap event
-                OnTap(m_currentTouch);
+                OnTap();
             }
             else if (timeDifferenceBetweenTaps <= m_doubleTapTimeThreshold && distanceBetweenTaps <= m_tapRadiusThreshold && m_currentTouch.HoldDistance <= m_tapRadiusThreshold && m_previousTouch.HoldDistance <= m_tapRadiusThreshold)
             {
                 text.text = "Double Tap";
 
                 //Double tap event
-                OnDoubleTap(m_currentTouch);
+                //OnDoubleTap(m_currentTouch);
             }
             //detect swipe, if any
             else if (m_currentTouch.HoldTime <= m_swipeHoldTimeThreshold && m_currentTouch.HoldDistance >= m_swipeDistanceThreshold)
@@ -156,7 +169,7 @@ public class InputHandler : MonoBehaviour
                 Vector2 swipeData = m_currentTouch.HoldVector;
 
                 //General Swipe event
-                OnGeneralSwipe(m_currentTouch);
+                //OnGeneralSwipe(m_currentTouch);
 
                 bool swipeIsVertical = Mathf.Abs(swipeData.x) < m_swipeWidth;
                 bool swipeIsHorizontal = Mathf.Abs(swipeData.y) < m_swipeWidth;
@@ -188,14 +201,14 @@ public class InputHandler : MonoBehaviour
                 }
 
                 //Directional Swipe Event
-                OnDirectionalSwipe(m_currentTouch);
+               // OnDirectionalSwipe(m_currentTouch);
             }
             else if (m_currentTouch.HoldTime >= m_holdThresholdMinimum && m_currentTouch.HoldTime <= m_holdThresholdMaximum && m_currentTouch.HoldDistance <= m_tapRadiusThreshold)
             {
                 text.text = "HOLD";
 
                 //Hold event
-                OnHold(m_currentTouch);
+                //OnHold(m_currentTouch);
             }
             else
             {
