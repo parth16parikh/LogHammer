@@ -20,10 +20,11 @@ public class InputHandler : MonoBehaviour
     //declaring a variable instance
     private static InputHandler instance;
 
-    public delegate void InputEvents(TLTouch currentTouch);
-
     //whether multi-touch is enabled
     public bool m_enableMultiTouch;
+
+    //declaring a delegate 
+    public delegate void InputEvents(TLTouch currentTouch);
 
     //declare all the public Events
     public event InputEvents Tap;
@@ -97,38 +98,37 @@ public class InputHandler : MonoBehaviour
         }
     }
 
-    ////calling the double tap event. All the methods susbscribed to DoubleTap will be called.
-    //public void OnDoubleTap(TLTouch currentTouch)
-    //{
-    //    if (DoubleTaps != null)
-    //        DoubleTaps(currentTouch);
-    //}
+    //calling the double tap event. All the methods susbscribed to DoubleTap will be called.
+    public void OnDoubleTap()
+    {
+        if (DoubleTaps != null)
+            DoubleTaps(m_currentTouch);
+    }
 
-    ////calling the General swipe event. All the methods subscribed to GeneralSwipe will be called.
-    //public void OnGeneralSwipe(TLTouch currentTouch)
-    //{
-    //    if (GeneralSwipe != null)
-    //        GeneralSwipe(currentTouch);
-    //}
+    //calling the General swipe event. All the methods subscribed to GeneralSwipe will be called.
+    public void OnGeneralSwipe()
+    {
+        if (GeneralSwipe != null)
+            GeneralSwipe(m_currentTouch);
+    }
 
-    ////calling the Directional swipe event. All the methods subscribed to DirectionalSwipe will be called.
-    //public void OnDirectionalSwipe(TLTouch currentTouch)
-    //{
-    //    if (DirectionalSwipe != null)
-    //        DirectionalSwipe(currentTouch);
-    //}
+    //calling the Directional swipe event. All the methods subscribed to DirectionalSwipe will be called.
+    public void OnDirectionalSwipe()
+    {
+        if (DirectionalSwipe != null)
+            DirectionalSwipe(m_currentTouch);
+    }
 
-    ////calling the Hold event. All the methods subscribed to Hold will be called.
-    //public void OnHold(TLTouch currentTouch)
-    //{
-    //    if (Hold != null)
-    //        OnHold(currentTouch);
-    //}
+    //calling the Hold event. All the methods subscribed to Hold will be called.
+    public void OnHold()
+    {
+        if (Hold != null)
+            Hold(m_currentTouch);
+    }
 
     //Called Every frame
     private void Update()
     {
-
         if (Input.touchCount == 0)
             return;
 
@@ -137,7 +137,6 @@ public class InputHandler : MonoBehaviour
 
         //touch begins...
         if (touch.phase == TouchPhase.Began)
-
         {
             m_currentTouch.SetTouchStartInfo(touch.position, Time.time);
         }
@@ -165,7 +164,7 @@ public class InputHandler : MonoBehaviour
                 text.text = "Double Tap";
 
                 //Double tap event
-                //OnDoubleTap(m_currentTouch);
+                OnDoubleTap();
             }
             //detect swipe, if any
             else if (m_currentTouch.HoldTime <= m_swipeHoldTimeThreshold && m_currentTouch.HoldDistance >= m_swipeDistanceThreshold)
@@ -173,7 +172,7 @@ public class InputHandler : MonoBehaviour
                 Vector2 swipeData = m_currentTouch.HoldVector;
 
                 //General Swipe event
-                //OnGeneralSwipe(m_currentTouch);
+                OnGeneralSwipe();
 
                 bool swipeIsVertical = Mathf.Abs(swipeData.x) < m_swipeWidth;
                 bool swipeIsHorizontal = Mathf.Abs(swipeData.y) < m_swipeWidth;
@@ -205,14 +204,14 @@ public class InputHandler : MonoBehaviour
                 }
 
                 //Directional Swipe Event
-               // OnDirectionalSwipe(m_currentTouch);
+                OnDirectionalSwipe();
             }
             else if (m_currentTouch.HoldTime >= m_holdThresholdMinimum && m_currentTouch.HoldTime <= m_holdThresholdMaximum && m_currentTouch.HoldDistance <= m_tapRadiusThreshold)
             {
                 text.text = "HOLD";
 
                 //Hold event
-                //OnHold(m_currentTouch);
+                OnHold();
             }
             else
             {
