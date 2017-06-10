@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\LogHammer\Scripts\Character.cs" />
+    <Compile Include="Assets\LogHammer\Scripts\CharacterManager.cs" />
     <Compile Include="Assets\LogHammer\Scripts\CharacterMovement.cs" />
     <Compile Include="Assets\LogHammer\Scripts\Command.cs" />
     <Compile Include="Assets\LogHammer\Scripts\Constant.cs" />
