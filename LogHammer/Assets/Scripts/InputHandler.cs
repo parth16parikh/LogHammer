@@ -1,25 +1,56 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-//This class will handle all the touch inputs via events. It is a singleton class. Register to events by subscribing to them.
+//Declare an enum to indicate the values of Directional Swipe
+public enum SwipeDirection
+{
+    None,
+    Up,
+    Down,
+    Left,
+    Right
+};
+
+//This class will handle all the touch inputs via events. It is a singleton class. Register to events by subscribing to them. Note that
+//when you register any functions to any of the public events, it has a parameter "TLTouch"
 public class InputHandler : MonoBehaviour
 {
     //declaring a variable instance
     private static InputHandler instance;
-    public delegate void Inputs();
 
-    public event Inputs Tap;
-    public event Inputs DoubleTaps;
-    public event Inputs ZoomIn;
-    public event Inputs ZoomOut;
-    public event Inputs Drag;
-    public event Inputs Swipe;
-    public event Inputs Hold;
+    //whether multi-touch is enabled
+    public bool m_enableMultiTouch;
 
-    private float m_doubleTapThreshold = 10f;
+    //declaring a delegate 
+    public delegate void InputEvents(TLTouch currentTouch);
 
-    private Tap m_tapInput;                                   //get the coordinated where the tap took place
+    //declare all the public Events
+    public event InputEvents Tap;
+    public event InputEvents DoubleTaps;
+    public event InputEvents DirectionalSwipe;
+    public event InputEvents GeneralSwipe;
+    public event InputEvents Hold;
+
+    //temperory text for testing
+    public Text text;
+
+    //all the public threshold variables
+    private float m_doubleTapTimeThreshold = 0.5f;
+    private float m_tapRadiusThreshold = 60f;
+    private float m_tapHoldTimeThreshold = 0.3f;
+    private float m_swipeWidth = 120f;
+    private float m_swipeHoldTimeThreshold = 0.5f;
+    private float m_swipeDistanceThreshold = 80f;
+    private float m_dragHoldThreshold;
+    private float m_holdThresholdMinimum = 0.7f;
+    private float m_holdThresholdMaximum = 2f;
+
+    //TLTouch variables to store information regarding current and previous touches
+    private TLTouch m_currentTouch;
+    private TLTouch m_previousTouch;
+
 
     //constructor
     private InputHandler()
@@ -36,83 +67,185 @@ public class InputHandler : MonoBehaviour
             }
             return instance;
         }
+        set
+        {
+            instance = value;
+        }
     }
 
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    //Called when the object gets created
+    public void Start()
+    {
+        m_currentTouch = new TLTouch();
+        m_previousTouch = new TLTouch();
+        if (m_enableMultiTouch)
+            Input.multiTouchEnabled = false;
+    }
+
+    //calling the tap event. All the methods susbscribed to Tap will be called.
     public void OnTap()
     {
-        //call the tap event. All the methods susbscribed to Tap will be called.
+        Debug.Log("Inside the OnTap()");
         if (Tap != null)
-            Tap();
+        {
+            Debug.Log("Inside the IF condition");
+            Tap(m_currentTouch);
+        }
     }
 
-
+    //calling the double tap event. All the methods susbscribed to DoubleTap will be called.
     public void OnDoubleTap()
     {
         if (DoubleTaps != null)
-            DoubleTaps();
+            DoubleTaps(m_currentTouch);
     }
 
-    public void OnZoomIn()
+    //calling the General swipe event. All the methods subscribed to GeneralSwipe will be called.
+    public void OnGeneralSwipe()
     {
-        if (ZoomIn != null)
-            ZoomIn();
+        if (GeneralSwipe != null)
+            GeneralSwipe(m_currentTouch);
     }
 
-    public void OnZoomOut()
+    //calling the Directional swipe event. All the methods subscribed to DirectionalSwipe will be called.
+    public void OnDirectionalSwipe()
     {
-        if (ZoomOut != null)
-            ZoomOut();
+        if (DirectionalSwipe != null)
+            DirectionalSwipe(m_currentTouch);
     }
 
+    //calling the Hold event. All the methods subscribed to Hold will be called.
+    public void OnHold()
+    {
+        if (Hold != null)
+            Hold(m_currentTouch);
+    }
+
+    //Called Every frame
     private void Update()
     {
-        int listSize = Input.touchCount;
-        List<Touch> touches;
+        if (Input.touchCount == 0)
+            return;
 
-        touches = new List<Touch>(listSize);
+        //Detect single touch events
+        Touch touch = Input.GetTouch(0);
 
-        for(int i = 0; i < listSize; i++)
+        //touch begins...
+        if (touch.phase == TouchPhase.Began)
         {
-            touches.Add(Input.GetTouch(i));
+            m_currentTouch.SetTouchStartInfo(touch.position, Time.time);
         }
 
-        //detect tap
-        if (Input.touchCount == 1)
+        //touch ends...
+        else if (touch.phase == TouchPhase.Ended)
         {
-            Debug.Log("Tap event is detected");
-            OnTap();
-        }
+            //setting the properties in m_currentTouch
+            m_currentTouch.SetTouchEndInfo(touch.position, Time.time);
 
-        //detect doubletap, zoom in and zoom out events since all these 
-        if (Input.touchCount == 2)
-        {
-            Touch touchzero = Input.GetTouch(0);
-            Touch touchone = Input.GetTouch(1);
+            //calculating differences needed for carrying out comparisions
+            float timeDifferenceBetweenTaps = m_currentTouch.EndTime - m_previousTouch.EndTime;
+            float distanceBetweenTaps = Vector2.Distance(m_currentTouch.EndPosition, m_previousTouch.EndPosition);
 
-            //detect doubletap
-            if (Mathf.Abs(Vector3.Distance(touchzero.position, touchone.position)) < m_doubleTapThreshold)
+            //detect double tap, if any
+            if (m_currentTouch.HoldTime < m_tapHoldTimeThreshold && m_currentTouch.HoldDistance <= m_tapRadiusThreshold)
             {
-                Debug.Log("Double tap is detected");
+                text.text = "Tap event";
+
+                //Single tap event
+                OnTap();
+            }
+            else if (timeDifferenceBetweenTaps <= m_doubleTapTimeThreshold && distanceBetweenTaps <= m_tapRadiusThreshold && m_currentTouch.HoldDistance <= m_tapRadiusThreshold && m_previousTouch.HoldDistance <= m_tapRadiusThreshold)
+            {
+                text.text = "Double Tap";
+
+                //Double tap event
                 OnDoubleTap();
             }
-
-            //detect zoom in and zoom out
-            Vector2 touchzeroInPreviousFrame = touchzero.position - touchzero.deltaPosition;
-            Vector2 touchoneInPreviousFrame = touchone.position - touchone.deltaPosition;
-
-            float differenceInPreviousFrame = (touchoneInPreviousFrame - touchzeroInPreviousFrame).magnitude;
-            float differenceInThisFrame = (touchone.position - touchzero.position).magnitude;
-
-            if(differenceInThisFrame > differenceInPreviousFrame)
+            //detect swipe, if any
+            else if (m_currentTouch.HoldTime <= m_swipeHoldTimeThreshold && m_currentTouch.HoldDistance >= m_swipeDistanceThreshold)
             {
-                OnZoomIn();
+                Vector2 swipeData = m_currentTouch.HoldVector;
+
+                //General Swipe event
+                OnGeneralSwipe();
+
+                bool swipeIsVertical = Mathf.Abs(swipeData.x) < m_swipeWidth;
+                bool swipeIsHorizontal = Mathf.Abs(swipeData.y) < m_swipeWidth;
+
+                if (swipeIsVertical && swipeData.y > 0f)
+                {
+                    text.text = "UP";
+                    m_currentTouch.PSwipeDirection = SwipeDirection.Up;
+                }
+                else if (swipeIsVertical && swipeData.y < 0f)
+                {
+                    text.text = "DOWN";
+                    m_currentTouch.PSwipeDirection = SwipeDirection.Down;
+                }
+                else if (swipeIsHorizontal && swipeData.x > 0f)
+                {
+                    text.text = "RIGHT";
+                    m_currentTouch.PSwipeDirection = SwipeDirection.Right;
+                }
+                else if (swipeIsHorizontal && swipeData.x < 0f)
+                {
+                    text.text = "LEFT";
+                    m_currentTouch.PSwipeDirection = SwipeDirection.Left;
+                }
+                else
+                {
+                    text.text = "NONE";
+                    m_currentTouch.PSwipeDirection = SwipeDirection.None;
+                }
+
+                //Directional Swipe Event
+                OnDirectionalSwipe();
             }
-            else if(differenceInThisFrame < differenceInPreviousFrame)
+            else if (m_currentTouch.HoldTime >= m_holdThresholdMinimum && m_currentTouch.HoldTime <= m_holdThresholdMaximum && m_currentTouch.HoldDistance <= m_tapRadiusThreshold)
             {
-                OnZoomOut();
+                text.text = "HOLD";
+
+                //Hold event
+                OnHold();
             }
+            else
+            {
+                m_currentTouch.PSwipeDirection = SwipeDirection.None;
+            }
+
+            //if (m_currentTouch.m_holdTime >= m_dragHoldThreshold && Vector2.Distance(m_c))
+            m_previousTouch = new TLTouch(m_currentTouch);
         }
 
-        
+
+        ////detect doubletap, zoom in and zoom out events since all these 
+        //if (Input.touchCount >= 2)
+        //{
+        //    Touch touchzero = Input.GetTouch(0);
+        //    Touch touchone = Input.GetTouch(1);
+
+        //    //detect zoom in and zoom out
+        //    Vector2 touchzeroInPreviousFrame = touchzero.position - touchzero.deltaPosition;
+        //    Vector2 touchoneInPreviousFrame = touchone.position - touchone.deltaPosition;
+
+        //    float differenceInPreviousFrame = (touchoneInPreviousFrame - touchzeroInPreviousFrame).magnitude;
+        //    float differenceInThisFrame = (touchone.position - touchzero.position).magnitude;
+
+        //    if(differenceInThisFrame > differenceInPreviousFrame)
+        //    {
+        //        OnZoomIn();
+        //    }
+        //    else if(differenceInThisFrame < differenceInPreviousFrame)
+        //    {
+        //        OnZoomOut();
+        //    }
+        //}
+
+
     }
 }
