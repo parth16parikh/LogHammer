@@ -19,6 +19,7 @@ public class InputHandler : MonoBehaviour
 {
     //declaring a variable instance
     private static InputHandler instance;
+
     public delegate void InputEvents(TLTouch currentTouch);
 
     //whether multi-touch is enabled
@@ -48,6 +49,7 @@ public class InputHandler : MonoBehaviour
     //TLTouch variables to store information regarding current and previous touches
     private TLTouch m_currentTouch;
     private TLTouch m_previousTouch;
+
 
     //constructor
     private InputHandler()
@@ -126,6 +128,7 @@ public class InputHandler : MonoBehaviour
     //Called Every frame
     private void Update()
     {
+
         if (Input.touchCount == 0)
             return;
 
@@ -134,6 +137,7 @@ public class InputHandler : MonoBehaviour
 
         //touch begins...
         if (touch.phase == TouchPhase.Began)
+
         {
             m_currentTouch.SetTouchStartInfo(touch.position, Time.time);
         }
