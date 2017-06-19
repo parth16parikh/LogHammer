@@ -51,7 +51,6 @@ public class InputHandler : MonoBehaviour
     private TLTouch m_currentTouch;
     private TLTouch m_previousTouch;
 
-
     //constructor
     private InputHandler()
     { }
