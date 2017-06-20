@@ -89,10 +89,8 @@ public class InputHandler : MonoBehaviour
     //calling the tap event. All the methods susbscribed to Tap will be called.
     public void OnTap()
     {
-        Debug.Log("Inside the OnTap()");
         if (Tap != null)
         {
-            Debug.Log("Inside the IF condition");
             Tap(m_currentTouch);
         }
     }
@@ -244,7 +242,5 @@ public class InputHandler : MonoBehaviour
         //        OnZoomOut();
         //    }
         //}
-
-
     }
 }
