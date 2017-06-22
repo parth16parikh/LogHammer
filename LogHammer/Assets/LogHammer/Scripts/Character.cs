@@ -16,7 +16,20 @@ public class Character : MonoBehaviour {
     private CharacterState currentCharacterState;
     //store the value of character side (whether character is on right side or left side)
     private CharacterSide sideOfCharacter;
-    
+    private CharacterType typeOfCharacter;
+
+    //Enum which will justify that Character will be controlled by human or AI
+    public enum CharacterType
+    {
+        Human,
+        AI
+    }
+    //property for character side
+    public CharacterType TypeOfCharacter
+    {
+        get { return typeOfCharacter; }
+        set { typeOfCharacter = value; }
+    }
     //Enum declared for Character side
     public enum CharacterSide
     {
@@ -59,26 +72,30 @@ public class Character : MonoBehaviour {
 	void Update () {
 
         //execute commands according to button or mouse press
-        if (Input.GetKey(KeyCode.W))
+        if(TypeOfCharacter == CharacterType.Human)
         {
-            moveUpCommand.Execute(this);
+            if (Input.GetKey(KeyCode.W))
+            {
+                moveUpCommand.Execute(this);
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                moveLeftCommand.Execute(this);
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                moveDownCommand.Execute(this);
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                moveRightCommand.Execute(this);
+            }
+            if (Input.GetMouseButton(Constant.INTZERO))
+            {
+                moveToCommand.Execute(this);
+            }
         }
-        if (Input.GetKey(KeyCode.A))
-        {
-            moveLeftCommand.Execute(this);
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            moveDownCommand.Execute(this);
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            moveRightCommand.Execute(this);
-        }
-        if (Input.GetMouseButton(Constant.INTZERO))
-        {
-            moveToCommand.Execute(this);
-        }
+        
     }
 
     //detect player collision with seperater and execute stop character command

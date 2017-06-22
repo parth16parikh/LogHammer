@@ -5,6 +5,8 @@ using UnityEngine;
 //This class creates instances of both player and keeps them here in array
 public class CharacterManager : MonoBehaviour {
 
+    //player side
+    public bool myPlayerShouldBeOnLeft = false;
     //prefab of character
     public GameObject characterPrefab;
     //parent transform of both the characcters
@@ -25,11 +27,17 @@ public class CharacterManager : MonoBehaviour {
             if(i == (int)Character.CharacterSide.Left)
             {
                 character = Instantiate<GameObject>(characterPrefab, characterPrefab.transform.position, Quaternion.identity,charactersParent).GetComponent<Character>();
+                if (myPlayerShouldBeOnLeft) { character.TypeOfCharacter = Character.CharacterType.Human; }
+                else { character.TypeOfCharacter = Character.CharacterType.AI; }
             }
             else if(i == (int)Character.CharacterSide.Right)
             {
                 character = Instantiate<GameObject>(characterPrefab, new Vector3(-characterPrefab.transform.position.x, characterPrefab.transform.position.y, characterPrefab.transform.position.z), Quaternion.identity, charactersParent).GetComponent<Character>();
+                if (!myPlayerShouldBeOnLeft) { character.TypeOfCharacter = Character.CharacterType.Human; }
+                else { character.TypeOfCharacter = Character.CharacterType.AI; }
             }
+
+            
             //Define which side character will be
             character.SideOfCharacter = (Character.CharacterSide)i;
             //assign gameobject name for differentiation
