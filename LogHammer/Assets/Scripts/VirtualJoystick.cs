@@ -5,69 +5,123 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-//This class will handle the inputs and the mvement display of the joystick
+/// <summary>
+/// This class will handle the inputs and the mvement display of the joystick
+/// </summary>
 public class VirtualJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointerDownHandler
 {
-    //The images of the background and the joystick
-    private Image backGround;
-    private Image joyStick;
+    /// <summary>
+    /// Single instance of VirtualJoystick
+    /// </summary>
+    private static VirtualJoystick instance;
 
-    //The input of the joystick
-    private Vector3 inputData;
+    // The images of the background and the joystick
+    private Image m_backGround;
+    private Image m_joyStick;
+
+    /// <summary>
+    /// The input of the joystick
+    /// </summary>
+    private Vector3 m_inputData;
+
+    // Declare a delegate for the event                             
+    public delegate void JoystickInput(Vector3 input);
+
+    // Event associated with the delegate            
+    private event JoystickInput joystickInputEvent;                     
+
+    // Constructor
+    private VirtualJoystick()
+    { }
+
+    /// <summary>
+    /// The Instance property of VirtualJoystick
+    /// </summary>
+    public static VirtualJoystick Instance
+    {
+        get
+        {
+            if(instance == null)
+            {
+                instance = new VirtualJoystick();
+            }
+            return instance;
+        }
+        set
+        {
+            instance = value;
+        }
+    }
+
+    /// <summary>
+    /// Subscribe to this event if you have something to do on the Joystick input event
+    /// </summary>
+    public JoystickInput JoystickInputEvent
+    {
+        get { return joystickInputEvent; }
+        set { joystickInputEvent = value; }
+    }
+
+    // Called right after the instance of this script is made, and before any other methods of the script
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     // Use this for initialization
     private void Start()
     {
-        backGround = GetComponent<Image>();
-        joyStick = transform.GetChild(0).GetComponent<Image>();
+        m_backGround = GetComponent<Image>();
+        m_joyStick = transform.GetChild(0).GetComponent<Image>();
     }
 
-    //Is called when a drag event occurs
+    // Is called when a drag event occurs
     public void OnDrag(PointerEventData eventData)
     {
-        Vector2 position;
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(backGround.rectTransform, eventData.position, eventData.pressEventCamera, out position))
+        // This is the position of the current position of the drag touch with respect to the rect transform in the first argument
+        // of the ScreenPointToLocalPointInRectangle below i.e. the background image here
+        Vector2 positionWithRespectToBackgroundImage;
+
+        // Checking whether there is any touch inside the rect transform's area
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(m_backGround.rectTransform,
+                                        eventData.position, eventData.pressEventCamera, out positionWithRespectToBackgroundImage))
         {
-            //convert position within 0 to 1 (w.r.t. the backgorund image
-            position.x = (position.x / backGround.rectTransform.sizeDelta.x);
-            position.y = (position.y / backGround.rectTransform.sizeDelta.y);
+            // Convert position within 0 to 1 (w.r.t. the background image)
+            positionWithRespectToBackgroundImage.x = (positionWithRespectToBackgroundImage.x / m_backGround.rectTransform.sizeDelta.x);
+            positionWithRespectToBackgroundImage.y = (positionWithRespectToBackgroundImage.y / m_backGround.rectTransform.sizeDelta.y);
 
-            //convert the input into proper form: 0 in middle of the backgound, and upto magnitude 1 on each sides
-            inputData = new Vector3(position.x*2 + 1, 0f, position.y*2 - 1);
+            // Convert the input into proper form: 0 in middle of the backgound, and upto magnitude 1 on each sides
+            m_inputData = new Vector3(positionWithRespectToBackgroundImage.x * 2 + 1, 0f, positionWithRespectToBackgroundImage.y * 2 - 1);
 
-            //if while dragging, magnitude crosses 1, it remains 1
-            inputData = (inputData.magnitude > 1.0f) ? inputData.normalized : inputData;
+            // If while dragging, magnitude crosses 1, it remains 1
+            m_inputData = (m_inputData.magnitude > 1.0f) ? m_inputData.normalized : m_inputData;
 
-            //move the joystick
-            joyStick.rectTransform.anchoredPosition =
-                new Vector3(inputData.x * backGround.rectTransform.sizeDelta.x / 3, inputData.z * backGround.rectTransform.sizeDelta.y /3 );
-        } 
+            // Move the joystick
+            m_joyStick.rectTransform.anchoredPosition = new Vector3(m_inputData.x * m_backGround.rectTransform.sizeDelta.x / 3, 
+                    m_inputData.z * m_backGround.rectTransform.sizeDelta.y / 3);
+
+            // Call the event
+            if (JoystickInputEvent != null)
+            {
+                JoystickInputEvent(m_inputData);
+            }
+        }
     }
 
-    //this event is called when pointer goes down
+    // This event is called when pointer goes down
     public void OnPointerDown(PointerEventData eventData)
     {
-        //calls drag event
+        // Calls drag event
         OnDrag(eventData);
     }
 
-    //this event is called when the pointer goes up
+    // This event is called when the pointer goes up
     public void OnPointerUp(PointerEventData eventData)
     {
-        //resets input to zero
-        inputData = Vector3.zero;
+        // Resets input to zero
+        m_inputData = Vector3.zero;
 
-        //resets the joystick position to zero i.e. the center
-        joyStick.rectTransform.anchoredPosition = inputData;
-    }
-
-    //called every frame
-    public void Update()
-    {
-        //move the ball when we have some magnitude of input
-        if(inputData.magnitude > 0f)
-        {
-            BallMovement.Instance.MoveBall(inputData);
-        }
+        // Resets the joystick position to zero i.e. the center
+        m_joyStick.rectTransform.anchoredPosition = m_inputData;
     }
 }

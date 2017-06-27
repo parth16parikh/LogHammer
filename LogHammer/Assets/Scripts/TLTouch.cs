@@ -2,15 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Stores all the information about a particular touch
+/// </summary>
 public class TLTouch
 {
-    //stores all the basic information about a particular touch
+    // Stores all the basic information about a particular touch
     private Vector2 startPosition, endPosition;
     private float startTime, endTime, holdTime, holdDistance;
     private Vector2 holdVector;
     private SwipeDirection swipeDirection;
 
-    //define the properties of above private variables
+    // Define the properties of above private variables
+    /// <summary>
+    /// The position where the touch started
+    /// </summary>
     public Vector2 StartPosition
     {
         get
@@ -23,6 +29,9 @@ public class TLTouch
         }
     }
 
+    /// <summary>
+    /// The position where the touch ended
+    /// </summary>
     public Vector2 EndPosition
     {
         get
@@ -35,6 +44,9 @@ public class TLTouch
         }
     }
 
+    /// <summary>
+    /// The time when the touch started
+    /// </summary>
     public float StartTime
     {
         get
@@ -47,6 +59,9 @@ public class TLTouch
         }
     }
 
+    /// <summary>
+    /// The time when the touch ended
+    /// </summary>
     public float EndTime
     {
         get
@@ -59,6 +74,9 @@ public class TLTouch
         }
     }
 
+    /// <summary>
+    /// The vector representation between the start and the end points
+    /// </summary>
     public Vector2 HoldVector
     {
         set
@@ -71,6 +89,9 @@ public class TLTouch
         }
     }
 
+    /// <summary>
+    /// The time for which the touch was held
+    /// </summary>
     public float HoldTime
     {
         set
@@ -83,6 +104,9 @@ public class TLTouch
         }
     }
 
+    /// <summary>
+    /// The distance between the touch start and end
+    /// </summary>
     public float HoldDistance
     {
         get
@@ -95,7 +119,10 @@ public class TLTouch
         }
     }
 
-    public SwipeDirection PSwipeDirection
+    /// <summary>
+    /// The direction of swipe if the touch has been any association with a swipe
+    /// </summary>
+    public SwipeDirection SwipeDirection
     {
         set
         {
@@ -107,27 +134,45 @@ public class TLTouch
         }
     }
 
-    //copy constructor
+    // Copy constructor
     public TLTouch(TLTouch tlTouch)
     {
-        startPosition = tlTouch.startPosition;
-        endPosition = tlTouch.endPosition;
-        startTime = tlTouch.startTime;
-        endTime = tlTouch.endTime;
-        holdTime = tlTouch.holdTime;
+        StartPosition = tlTouch.StartPosition;
+        EndPosition = tlTouch.EndPosition;
+        StartTime = tlTouch.StartTime;
+        EndTime = tlTouch.EndTime;
+        HoldTime = tlTouch.HoldTime;
     }
 
-    //default constructor
+    // Default constructor
     public TLTouch()
     {
     }
 
+    /// <summary>
+    /// Set the values of touch start variables
+    /// </summary>
+    /// <param name="startPos">
+    /// The start position of the touch
+    /// </param>
+    /// <param name="startTime">
+    /// The start time of the touch
+    /// </param>
     public void SetTouchStartInfo(Vector2 startPos, float startTime)
     {
         StartPosition = startPos;
         StartTime = startTime;
     }
 
+    /// <summary>
+    /// Set the values of touch end variables
+    /// </summary>
+    /// <param name="endPos">
+    /// The end position of the touch
+    /// </param>
+    /// <param name="endTime">
+    /// The end time of the touch
+    /// </param>
     public void SetTouchEndInfo(Vector2 endPos, float endTime)
     {
         EndPosition = endPos;
