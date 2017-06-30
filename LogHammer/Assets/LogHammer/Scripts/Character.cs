@@ -2,7 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : MonoBehaviour {
+public class Character : MonoBehaviour
+{
+    //Enum which will justify that Character will be controlled by human or AI
+    public enum CharacterType
+    {
+        Human,
+        AI
+    }
+    //Enum declared for Character side
+    public enum CharacterSide
+    {
+        Left,
+        Right
+    }
+    //enum for character state
+    public enum CharacterState
+    {
+        Idle,
+        Moving,
+        AtBorder,
+    }
 
     //all the Commands for character
     private Command m_moveTo;
@@ -14,54 +34,35 @@ public class Character : MonoBehaviour {
 
     //reference to Charactermovement on gameobject
     private CharacterMovement m_characterMovement;
+    //This enum shows that character is human or not
+    private CharacterType typeOfCharacter;
     //stores current state of the character
-    private CharacterState m_currentCharacterState;
+    private CharacterState currentCharacterState;
     //store the value of character side (whether character is on right side or left side)
-    private CharacterSide m_sideOfCharacter;
-    private CharacterType m_typeOfCharacter;
+    private CharacterSide sideOfCharacter;
 
-    //Enum which will justify that Character will be controlled by human or AI
-    public enum CharacterType
-    {
-        Human,
-        AI
-    }
     //property for character side
     public CharacterType TypeOfCharacter
     {
-        get { return m_typeOfCharacter; }
-        set { m_typeOfCharacter = value; }
-    }
-    //Enum declared for Character side
-    public enum CharacterSide
-    {
-        Left,
-        Right
+        get { return typeOfCharacter; }
+        set { typeOfCharacter = value; }
     }
     //property for character side
     public CharacterSide SideOfCharacter
     {
-        get { return m_sideOfCharacter; }
-        set { m_sideOfCharacter = value; }
+        get { return sideOfCharacter; }
+        set { sideOfCharacter = value; }
     }
-
-    //enum for character state
-    public enum CharacterState
-    {
-        Idle,
-        Moving,
-        AtBorder,
-    }
-
     //property for storing current state of character
     public CharacterState CurrentCharacterState
     {
-        get { return m_currentCharacterState; }
-        set { m_currentCharacterState = value; }
+        get { return currentCharacterState; }
+        set { currentCharacterState = value; }
     }
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         m_moveTo = new MoveToCommand();
         m_moveUp = new MoveUpCommand();
         m_moveDown = new MoveDownCommand();
@@ -69,16 +70,17 @@ public class Character : MonoBehaviour {
         m_moveRight = new MoveRightCommand();
         m_stopMovement = new StopMovementCommand();
         m_characterMovement = GetComponent<CharacterMovement>();
-        m_currentCharacterState = CharacterState.Idle;
+        currentCharacterState = CharacterState.Idle;
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
         //execute commands according to button or mouse press
-        if(TypeOfCharacter == CharacterType.Human)
+        if (TypeOfCharacter == CharacterType.Human)
         {
             Command nextStepForCharacter = GetCurrentCommand();
-            if(nextStepForCharacter != null) { nextStepForCharacter.Execute(this); }
+            if (nextStepForCharacter != null) { nextStepForCharacter.Execute(this); }
         }
     }
 
@@ -110,7 +112,7 @@ public class Character : MonoBehaviour {
     //detect player collision with seperater and execute stop character command
     public void OnCollisionStay(Collision collision)
     {
-        if (collision.collider.tag == Constant.Seprater)
+        if (collision.collider.tag == Constant.Separator)
         {
             m_stopMovement.Execute(this);
         }
@@ -119,7 +121,7 @@ public class Character : MonoBehaviour {
     //execute move to command
     public void MoveToPosition()
     {
-       m_characterMovement.MoveToPosition();
+        m_characterMovement.MoveToPosition();
     }
 
     //execute move up command
