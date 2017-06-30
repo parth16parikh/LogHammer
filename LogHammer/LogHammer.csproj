@@ -78,6 +78,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Input Module\Scripts\InputHandler.cs" />
+    <Compile Include="Assets\Input Module\Scripts\TLTouch.cs" />
+    <Compile Include="Assets\Input Module\Scripts\VirtualJoystick.cs" />
     <Compile Include="Assets\LogHammer\Scripts\Character.cs" />
     <Compile Include="Assets\LogHammer\Scripts\CharacterManager.cs" />
     <Compile Include="Assets\LogHammer\Scripts\CharacterMovement.cs" />
