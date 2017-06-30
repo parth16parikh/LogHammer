@@ -15,51 +15,56 @@ public class MoveToCommand : Command
     //it will execute the command
     public override void Execute(Character character)
     {
-        character.moveToPosition();
+        character.MoveToPosition();
     }
 }
+
 //This command will move character to up
 public class MoveUpCommand : Command
 {
     //it will execute the command
     public override void Execute(Character character)
     {
-        character.moveUp();
+        character.MoveUp();
     }
 }
+
 //This command will move character to down
 public class MoveDownCommand : Command
 {
     //it will execute the command
     public override void Execute(Character character)
     {
-        character.moveDown();
+        character.MoveDown();
     }
 }
+
 //This command will move character to user's left side
 public class MoveLeftCommand : Command
 {
     //it will execute the command
     public override void Execute(Character character)
     {
-        character.moveLeft();
+        character.MoveLeft();
     }
 }
+
 //This command will move character to user's right side
 public class MoveRightCommand : Command
 {
     //it will execute the command
     public override void Execute(Character character)
     {
-        character.moveRight();
+        character.MoveRight();
     }
 }
+
 //This command will stop character movement
 public class StopMovementCommand : Command
 {
     //it will execute the command
     public override void Execute(Character character)
     {
-        character.stopMovement();
+        character.StopMovement();
     }
 }

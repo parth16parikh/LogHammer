@@ -4,137 +4,141 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour {
     //mouse click start position
-    private Vector2 tapStartPos = Vector2.zero;
+    private Vector2 m_tapStartPos = Vector2.zero;
     //mouse's current position when pressed
-    private Vector2 tapCurrentPos = Vector2.zero;
+    private Vector2 m_tapCurrentPos = Vector2.zero;
     //start time when mouse is pressed
-    private float tapStartTime = Constant.ZERO;
+    private float m_tapStartTime = Constant.Zero;
     //current time while mosue is still pressed
-    private float tapCurrentTime = Constant.ZERO;
+    private float m_tapCurrentTime = Constant.Zero;
     //holds the reference to the rigidbody which is on the character gameobject
-    private Rigidbody rgdBody;
+    private Rigidbody m_rgdBody;
     //holds the reference to the Character script which is on the character gameobject
-    private Character character;
+    private Character m_character;
 
 	// Use this for initialization
 	void Start () {
-        rgdBody = GetComponent<Rigidbody>();
-        character = GetComponent<Character>();
+        m_rgdBody = GetComponent<Rigidbody>();
+        m_character = GetComponent<Character>();
     }
 	
 	// Update is called once per frame
 	void Update () {
         //record mouse start position and start time when mouse button is pressed
-        if (Input.GetMouseButtonDown(Constant.INTZERO))
+        if (Input.GetMouseButtonDown(Constant.IntZero))
         {
-            tapStartPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            tapStartTime = Time.realtimeSinceStartup;
+            m_tapStartPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            m_tapStartTime = Time.realtimeSinceStartup;
         }
 
         //If character is not moving then set its state idle
-        if (character.CurrentCharacterState == Character.CharacterState.Moving && rgdBody.velocity == Vector3.zero)
+        if (m_character.CurrentCharacterState == Character.CharacterState.Moving && m_rgdBody.velocity == Vector3.zero)
         {
-            character.CurrentCharacterState = Character.CharacterState.Idle;
+            m_character.CurrentCharacterState = Character.CharacterState.Idle;
         }
     }
  
     //move character to the current mouse position
-    public void moveToPosition()
+    public void MoveToPosition()
     {
         //set character's state to moving state
-        character.CurrentCharacterState = Character.CharacterState.Moving;
+        m_character.CurrentCharacterState = Character.CharacterState.Moving;
 
         //caculate direction and distance of the mouse
-        tapCurrentPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-        Vector2 dragDirection = (tapStartPos - tapCurrentPos);
+        m_tapCurrentPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        Vector2 dragDirection = (m_tapStartPos - m_tapCurrentPos);
         //calculate time for mouse to travel that much ditance
-        tapCurrentTime = Time.realtimeSinceStartup;
-        float timedifference = tapCurrentTime - tapStartTime;
+        m_tapCurrentTime = Time.realtimeSinceStartup;
+        float timedifference = m_tapCurrentTime - m_tapStartTime;
 
         //record current position as start position
-        tapStartPos = tapCurrentPos;
-        tapStartTime = tapCurrentTime;
+        m_tapStartPos = m_tapCurrentPos;
+        m_tapStartTime = m_tapCurrentTime;
 
         //calculate the resultant velocity of the character
-        Vector3 resultantvelocity = new Vector3(dragDirection.x, Constant.ZERO, dragDirection.y) / timedifference;
-        if (dragDirection != Vector2.zero && timedifference != Constant.ZERO)
+        Vector3 resultantvelocity = new Vector3(dragDirection.x, Constant.Zero, dragDirection.y) / timedifference;
+        if (dragDirection != Vector2.zero && timedifference != Constant.Zero)
         {
-            rgdBody.velocity = Vector3.ClampMagnitude(rgdBody.velocity + resultantvelocity, Constant.CLAMP_VELOCITY);
+            m_rgdBody.velocity = Vector3.ClampMagnitude(m_rgdBody.velocity + resultantvelocity, Constant.ClampVelocity);
         }
     }
 
     // stop character movement when it collides with seperater
-    public void stopMovement()
+    public void StopMovement()
     {
-        character.CurrentCharacterState = Character.CharacterState.AtBorder;
-        rgdBody.velocity = Vector3.zero;
+        m_character.CurrentCharacterState = Character.CharacterState.AtBorder;
+        m_rgdBody.velocity = Vector3.zero;
     }
+
     //character should go up when user press W
-    public void moveUp()
+    public void MoveUp()
     {
-        if (character.CurrentCharacterState != Character.CharacterState.AtBorder && character.CurrentCharacterState != Character.CharacterState.Moving)
+        if (m_character.CurrentCharacterState != Character.CharacterState.AtBorder && m_character.CurrentCharacterState != Character.CharacterState.Moving)
         {
-            character.CurrentCharacterState = Character.CharacterState.Moving;
+            m_character.CurrentCharacterState = Character.CharacterState.Moving;
         }
-        rgdBody.velocity = Vector3.ClampMagnitude((rgdBody.velocity + Vector3.back * Constant.FORCE_INTENSITY), Constant.CLAMP_VELOCITY);
+        m_rgdBody.velocity = Vector3.ClampMagnitude((m_rgdBody.velocity + Vector3.back * Constant.ForceIntensity), Constant.ClampVelocity);
         Debug.Log("Move Character up");
     }
+
     //character should go down when user press S
-    public void moveDown()
+    public void MoveDown()
     {
-        if (character.CurrentCharacterState != Character.CharacterState.AtBorder && character.CurrentCharacterState != Character.CharacterState.Moving)
+        if (m_character.CurrentCharacterState != Character.CharacterState.AtBorder && m_character.CurrentCharacterState != Character.CharacterState.Moving)
         {
-            character.CurrentCharacterState = Character.CharacterState.Moving;
+            m_character.CurrentCharacterState = Character.CharacterState.Moving;
         }
-        rgdBody.velocity = Vector3.ClampMagnitude((rgdBody.velocity + Vector3.forward * Constant.FORCE_INTENSITY), Constant.CLAMP_VELOCITY);
+        m_rgdBody.velocity = Vector3.ClampMagnitude((m_rgdBody.velocity + Vector3.forward * Constant.ForceIntensity), Constant.ClampVelocity);
         Debug.Log("Move Character Down");
     }
+
     //character should go left when user press A
-    public void moveLeft()
+    public void MoveLeft()
     {
-        if (character.SideOfCharacter == Character.CharacterSide.Left)
+        if (m_character.SideOfCharacter == Character.CharacterSide.Left)
         {
-            if (character.CurrentCharacterState != Character.CharacterState.Moving)
+            if (m_character.CurrentCharacterState != Character.CharacterState.Moving)
             {
-                character.CurrentCharacterState = Character.CharacterState.Moving;
+                m_character.CurrentCharacterState = Character.CharacterState.Moving;
             }
         }
-        if(character.SideOfCharacter == Character.CharacterSide.Right)
+        if(m_character.SideOfCharacter == Character.CharacterSide.Right)
         {
-            if (character.CurrentCharacterState == Character.CharacterState.AtBorder)
+            if (m_character.CurrentCharacterState == Character.CharacterState.AtBorder)
             {
                 return;
             }
             else
             {
-                character.CurrentCharacterState = Character.CharacterState.Moving;
+                m_character.CurrentCharacterState = Character.CharacterState.Moving;
             }
         }
-        rgdBody.velocity = Vector3.ClampMagnitude((rgdBody.velocity + Vector3.right * Constant.FORCE_INTENSITY), Constant.CLAMP_VELOCITY);
+        m_rgdBody.velocity = Vector3.ClampMagnitude((m_rgdBody.velocity + Vector3.right * Constant.ForceIntensity), Constant.ClampVelocity);
         Debug.Log("Move Character Left");
     }
+
     //character should go right when user press D
-    public void moveRight()
+    public void MoveRight()
     {
-        if (character.SideOfCharacter == Character.CharacterSide.Left)
+        if (m_character.SideOfCharacter == Character.CharacterSide.Left)
         {
-            if (character.CurrentCharacterState == Character.CharacterState.AtBorder)
+            if (m_character.CurrentCharacterState == Character.CharacterState.AtBorder)
             {
                 return;
             }
             else
             {
-                character.CurrentCharacterState = Character.CharacterState.Moving;
+                m_character.CurrentCharacterState = Character.CharacterState.Moving;
             }
         }
-        if (character.SideOfCharacter == Character.CharacterSide.Right)
+        if (m_character.SideOfCharacter == Character.CharacterSide.Right)
         {
-            if (character.CurrentCharacterState != Character.CharacterState.Moving)
+            if (m_character.CurrentCharacterState != Character.CharacterState.Moving)
             {
-                character.CurrentCharacterState = Character.CharacterState.Moving;
+                m_character.CurrentCharacterState = Character.CharacterState.Moving;
             }
         }
-        rgdBody.velocity = Vector3.ClampMagnitude((rgdBody.velocity + Vector3.left * Constant.FORCE_INTENSITY), Constant.CLAMP_VELOCITY);
+        m_rgdBody.velocity = Vector3.ClampMagnitude((m_rgdBody.velocity + Vector3.left * Constant.ForceIntensity), Constant.ClampVelocity);
         Debug.Log("Move Character Right");
     }   
 }
