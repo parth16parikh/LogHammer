@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// This class will handle the inputs and the mvement display of the joystick
+/// This class will handle the inputs and the movement display of the joystick
 /// </summary>
 public class VirtualJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointerDownHandler
 {
@@ -30,10 +30,6 @@ public class VirtualJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, I
     // Event associated with the delegate            
     private event JoystickInput joystickInputEvent;                     
 
-    // Constructor
-    private VirtualJoystick()
-    { }
-
     /// <summary>
     /// The Instance property of VirtualJoystick
     /// </summary>
@@ -41,13 +37,10 @@ public class VirtualJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, I
     {
         get
         {
-            if(instance == null)
-            {
-                instance = new VirtualJoystick();
-            }
+            Debug.Assert(instance != null, "Instance of Virtual joystick is null");
             return instance;
         }
-        set
+        private set
         {
             instance = value;
         }
@@ -66,14 +59,13 @@ public class VirtualJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, I
     private void Awake()
     {
         Instance = this;
+        m_backGround = GetComponent<Image>();
+        m_joyStick = transform.GetChild(0).GetComponent<Image>();
     }
 
     // Use this for initialization
     private void Start()
-    {
-        m_backGround = GetComponent<Image>();
-        m_joyStick = transform.GetChild(0).GetComponent<Image>();
-    }
+    { } 
 
     // Is called when a drag event occurs
     public void OnDrag(PointerEventData eventData)
@@ -84,14 +76,17 @@ public class VirtualJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, I
 
         // Checking whether there is any touch inside the rect transform's area
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(m_backGround.rectTransform,
-                                        eventData.position, eventData.pressEventCamera, out positionWithRespectToBackgroundImage))
+            eventData.position, eventData.pressEventCamera, out positionWithRespectToBackgroundImage))
         {
             // Convert position within 0 to 1 (w.r.t. the background image)
-            positionWithRespectToBackgroundImage.x = (positionWithRespectToBackgroundImage.x / m_backGround.rectTransform.sizeDelta.x);
-            positionWithRespectToBackgroundImage.y = (positionWithRespectToBackgroundImage.y / m_backGround.rectTransform.sizeDelta.y);
+            positionWithRespectToBackgroundImage.x = 
+                (positionWithRespectToBackgroundImage.x / m_backGround.rectTransform.sizeDelta.x);
+            positionWithRespectToBackgroundImage.y =
+                (positionWithRespectToBackgroundImage.y / m_backGround.rectTransform.sizeDelta.y);
 
             // Convert the input into proper form: 0 in middle of the backgound, and upto magnitude 1 on each sides
-            m_inputData = new Vector3(positionWithRespectToBackgroundImage.x * 2 + 1, 0f, positionWithRespectToBackgroundImage.y * 2 - 1);
+            m_inputData = 
+                new Vector3(positionWithRespectToBackgroundImage.x * 2 + 1, 0f, positionWithRespectToBackgroundImage.y * 2 - 1);
 
             // If while dragging, magnitude crosses 1, it remains 1
             m_inputData = (m_inputData.magnitude > 1.0f) ? m_inputData.normalized : m_inputData;

@@ -34,13 +34,6 @@ public class InputHandler : MonoBehaviour
     [SerializeField]
     private Text m_text;
 
-    // Declare all the public Events
-    private event InputEvents tap;
-    private event InputEvents doubleTap;
-    private event InputEvents directionalSwipe;
-    private event InputEvents generalSwipe;
-    private event InputEvents hold;
-
     // All the threshold variables
     [SerializeField]
     private float m_doubleTapTimeThreshold = 0.5f;
@@ -68,9 +61,12 @@ public class InputHandler : MonoBehaviour
     // Declaring a delegate 
     public delegate void InputEvents(TLTouch currentTouch);
 
-    // Constructor
-    private InputHandler()
-    { }
+    // Declare all the public Events
+    private event InputEvents tap;
+    private event InputEvents doubleTap;
+    private event InputEvents directionalSwipe;
+    private event InputEvents generalSwipe;
+    private event InputEvents hold;
 
     // Defining all the properties
     /// <summary>
@@ -80,13 +76,10 @@ public class InputHandler : MonoBehaviour
     {
         get
         {
-            if (instance == null)
-            {
-                instance = new InputHandler();
-            }
+            Debug.Assert(instance != null, "Instance of InputHandler is null");
             return instance;
         }
-        set
+        private set
         {
             instance = value;
         }
@@ -149,7 +142,7 @@ public class InputHandler : MonoBehaviour
         m_currentTouch = new TLTouch();
         m_previousTouch = new TLTouch();
         if (m_enableMultiTouch)
-            Input.multiTouchEnabled = false;
+        { Input.multiTouchEnabled = false; }
     }
 
     /// <summary>
@@ -157,10 +150,9 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     public void OnTap()
     {
+        Debug.Assert(Tap != null, "Tap events not subsrcribed");
         if (Tap != null)
-        {
-            Tap(m_currentTouch);
-        }
+        { Tap(m_currentTouch); }
     }
 
     /// <summary>
@@ -168,8 +160,9 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     public void OnDoubleTap()
     {
+        Debug.Assert(DoubleTap != null, "DoubleTap events not subsrcribed");
         if (DoubleTap != null)
-            DoubleTap(m_currentTouch);
+        { DoubleTap(m_currentTouch); }
     }
 
     /// <summary>
@@ -177,8 +170,9 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     public void OnGeneralSwipe()
     {
+        Debug.Assert(GeneralSwipe != null, "GeneralSwipe events not subsrcribed");
         if (GeneralSwipe != null)
-            GeneralSwipe(m_currentTouch);
+        { GeneralSwipe(m_currentTouch); }
     }
 
     /// <summary>
@@ -186,8 +180,9 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     public void OnDirectionalSwipe()
     {
+        Debug.Assert(DirectionalSwipe != null, "DirectionalSwipe events not subsrcribed");
         if (DirectionalSwipe != null)
-            DirectionalSwipe(m_currentTouch);
+        { DirectionalSwipe(m_currentTouch); }
     }
 
     /// <summary>
@@ -195,8 +190,9 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     public void OnHold()
     {
+        Debug.Assert(Hold != null, "Hold events not subsrcribed");
         if (Hold != null)
-            Hold(m_currentTouch);
+        { Hold(m_currentTouch); }
     }
 
     // Called Every frame
@@ -204,7 +200,11 @@ public class InputHandler : MonoBehaviour
     {
         // If there is no input, then return
         if (Input.touchCount == 0)
-            return;
+        { return; }
+
+        // If multi touch is on
+        if (m_enableMultiTouch)
+        { Debug.LogError("Multi touch coming soon!!"); }
 
         // Detect single touch events
         Touch touch = Input.GetTouch(0);
@@ -245,7 +245,7 @@ public class InputHandler : MonoBehaviour
             else if (m_currentTouch.HoldTime <= m_swipeHoldTimeThreshold && m_currentTouch.HoldDistance >= m_swipeDistanceThreshold)
             {
                 // Store the swipe vector in Swipe Data
-                Vector2 swipeData = m_currentTouch.HoldVector;
+                Vector2 swipeData = m_currentTouch.VectorDifferenceBetweenStartAndEnd;
 
                 // General Swipe event
                 OnGeneralSwipe();
@@ -298,30 +298,7 @@ public class InputHandler : MonoBehaviour
                 m_currentTouch.SwipeDirection = SwipeDirection.None;
             }
 
-            //if (m_currentTouch.m_holdTime >= m_dragHoldThreshold && Vector2.Distance(m_c))
-            m_previousTouch = new TLTouch(m_currentTouch);
+            m_previousTouch = m_currentTouch;
         }
-        ////detect doubletap, zoom in and zoom out events since all these 
-        //if (Input.touchCount >= 2)
-        //{
-        //    Touch touchzero = Input.GetTouch(0);
-        //    Touch touchone = Input.GetTouch(1);
-
-        //    //detect zoom in and zoom out
-        //    Vector2 touchzeroInPreviousFrame = touchzero.position - touchzero.deltaPosition;
-        //    Vector2 touchoneInPreviousFrame = touchone.position - touchone.deltaPosition;
-
-        //    float differenceInPreviousFrame = (touchoneInPreviousFrame - touchzeroInPreviousFrame).magnitude;
-        //    float differenceInThisFrame = (touchone.position - touchzero.position).magnitude;
-
-        //    if(differenceInThisFrame > differenceInPreviousFrame)
-        //    {
-        //        OnZoomIn();
-        //    }
-        //    else if(differenceInThisFrame < differenceInPreviousFrame)
-        //    {
-        //        OnZoomOut();
-        //    }
-        //}
     }
 }

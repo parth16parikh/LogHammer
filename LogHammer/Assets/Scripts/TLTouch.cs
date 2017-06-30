@@ -10,7 +10,7 @@ public class TLTouch
     // Stores all the basic information about a particular touch
     private Vector2 startPosition, endPosition;
     private float startTime, endTime, holdTime, holdDistance;
-    private Vector2 holdVector;
+    private Vector2 vectorDifferenceBetweenStartAndEnd;
     private SwipeDirection swipeDirection;
 
     // Define the properties of above private variables
@@ -19,14 +19,8 @@ public class TLTouch
     /// </summary>
     public Vector2 StartPosition
     {
-        get
-        {
-            return startPosition;
-        }
-        set
-        {
-            startPosition = value;
-        }
+        get { return startPosition; }
+        set { startPosition = value; }
     }
 
     /// <summary>
@@ -34,14 +28,8 @@ public class TLTouch
     /// </summary>
     public Vector2 EndPosition
     {
-        get
-        {
-            return endPosition;
-        }
-        set
-        {
-            endPosition = value;
-        }
+        get { return endPosition; }
+        set { endPosition = value; }
     }
 
     /// <summary>
@@ -49,14 +37,8 @@ public class TLTouch
     /// </summary>
     public float StartTime
     {
-        get
-        {
-            return startTime;
-        }
-        set
-        {
-            startTime = value;
-        }
+        get { return startTime; }
+        set { startTime = value; }
     }
 
     /// <summary>
@@ -64,29 +46,17 @@ public class TLTouch
     /// </summary>
     public float EndTime
     {
-        get
-        {
-            return endTime;
-        }
-        set
-        {
-            endTime = value;
-        }
+        get { return endTime; }
+        set { endTime = value; }
     }
 
     /// <summary>
     /// The vector representation between the start and the end points
     /// </summary>
-    public Vector2 HoldVector
+    public Vector2 VectorDifferenceBetweenStartAndEnd
     {
-        set
-        {
-            holdVector = value;
-        }
-        get
-        {
-            return holdVector;
-        }
+        set { vectorDifferenceBetweenStartAndEnd = value; }
+        get { return vectorDifferenceBetweenStartAndEnd; }
     }
 
     /// <summary>
@@ -94,14 +64,8 @@ public class TLTouch
     /// </summary>
     public float HoldTime
     {
-        set
-        {
-            holdTime = value;
-        }
-        get
-        {
-            return holdTime;
-        }
+        set { holdTime = value; }
+        get { return holdTime; }
     }
 
     /// <summary>
@@ -109,14 +73,8 @@ public class TLTouch
     /// </summary>
     public float HoldDistance
     {
-        get
-        {
-            return holdDistance;
-        }
-        set
-        {
-            holdDistance = value;
-        }
+        get { return holdDistance; }
+        set { holdDistance = value; }
     }
 
     /// <summary>
@@ -124,24 +82,8 @@ public class TLTouch
     /// </summary>
     public SwipeDirection SwipeDirection
     {
-        set
-        {
-            swipeDirection = value;
-        }
-        get
-        {
-            return swipeDirection;
-        }
-    }
-
-    // Copy constructor
-    public TLTouch(TLTouch tlTouch)
-    {
-        StartPosition = tlTouch.StartPosition;
-        EndPosition = tlTouch.EndPosition;
-        StartTime = tlTouch.StartTime;
-        EndTime = tlTouch.EndTime;
-        HoldTime = tlTouch.HoldTime;
+        set { swipeDirection = value; }
+        get { return swipeDirection; }
     }
 
     // Default constructor
@@ -177,8 +119,8 @@ public class TLTouch
     {
         EndPosition = endPos;
         EndTime = endTime;
-        HoldVector = new Vector2(EndPosition.x - StartPosition.x, EndPosition.y - StartPosition.y);
-        HoldDistance = HoldVector.magnitude;
+        VectorDifferenceBetweenStartAndEnd = new Vector2(EndPosition.x - StartPosition.x, EndPosition.y - StartPosition.y);
+        HoldDistance = VectorDifferenceBetweenStartAndEnd.magnitude;
         HoldTime = EndTime - StartTime;
     }
 }
