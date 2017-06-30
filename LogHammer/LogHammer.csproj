@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\InputHandler.cs" />
     <Compile Include="Assets\Scripts\TLTouch.cs" />
+    <Compile Include="Assets\Scripts\VirtualJoystick.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Huge Mocap Animation Library\READTHIS.txt" />
