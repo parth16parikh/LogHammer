@@ -91,6 +91,18 @@ public class TLTouch
     {
     }
 
+    public TLTouch(TLTouch tlTouch)
+    {
+        StartPosition = tlTouch.StartPosition;
+        EndPosition = tlTouch.EndPosition;
+        StartTime = tlTouch.StartTime;
+        EndTime = tlTouch.EndTime;
+        HoldTime = tlTouch.HoldTime;
+        HoldDistance = tlTouch.HoldDistance;
+        SwipeDirection = tlTouch.SwipeDirection;
+        VectorDifferenceBetweenStartAndEnd = tlTouch.VectorDifferenceBetweenStartAndEnd;
+    }
+
     /// <summary>
     /// Set the values of touch start variables
     /// </summary>

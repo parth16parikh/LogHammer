@@ -226,20 +226,21 @@ public class InputHandler : MonoBehaviour
             float distanceBetweenTaps = Vector2.Distance(m_currentTouch.EndPosition, m_previousTouch.EndPosition);
 
             // Detect double tap, if any
-            if (m_currentTouch.HoldTime < m_tapHoldTimeThreshold && m_currentTouch.HoldDistance <= m_tapRadiusThreshold)
-            {
-                m_text.text = "Tap event";
-
-                // Single tap event
-                OnTap();
-            }
-            else if (timeDifferenceBetweenTaps <= m_doubleTapTimeThreshold && distanceBetweenTaps <= m_tapRadiusThreshold
+            
+            if (timeDifferenceBetweenTaps <= m_doubleTapTimeThreshold && distanceBetweenTaps <= m_tapRadiusThreshold
                         && m_currentTouch.HoldDistance <= m_tapRadiusThreshold && m_previousTouch.HoldDistance <= m_tapRadiusThreshold)
             {
                 m_text.text = "Double Tap";
 
                 // Double tap event
                 OnDoubleTap();
+            }
+            else if (m_currentTouch.HoldTime < m_tapHoldTimeThreshold && m_currentTouch.HoldDistance <= m_tapRadiusThreshold)
+            {
+                m_text.text = "Tap event";
+
+                // Single tap event
+                OnTap();
             }
             // Detect swipe, if any
             else if (m_currentTouch.HoldTime <= m_swipeHoldTimeThreshold && m_currentTouch.HoldDistance >= m_swipeDistanceThreshold)
@@ -298,7 +299,8 @@ public class InputHandler : MonoBehaviour
                 m_currentTouch.SwipeDirection = SwipeDirection.None;
             }
 
-            m_previousTouch = m_currentTouch;
+            m_previousTouch.SetTouchStartInfo(m_currentTouch.StartPosition, m_currentTouch.StartTime);
+            m_previousTouch.SetTouchEndInfo(m_currentTouch.EndPosition, m_currentTouch.EndTime);
         }
     }
 }
