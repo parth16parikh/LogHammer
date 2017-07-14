@@ -4,17 +4,29 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
-    //mouse click start position
+    /// <summary>
+    /// mouse click start position
+    /// </summary>
     private Vector2 m_tapStartPos = Vector2.zero;
-    //mouse's current position when pressed
+    /// <summary>
+    /// mouse's current position when pressed
+    /// </summary>
     private Vector2 m_tapCurrentPos = Vector2.zero;
-    //start time when mouse is pressed
+    /// <summary>
+    /// start time when mouse is pressed
+    /// </summary>
     private float m_tapStartTime = Constant.Zero;
-    //current time while mouse is still pressed
+    /// <summary>
+    /// current time while mouse is still pressed
+    /// </summary>
     private float m_tapCurrentTime = Constant.Zero;
-    //holds the reference to the rigidbody which is on the character gameobject
+    /// <summary>
+    /// holds the reference to the rigidbody which is on the character gameobject
+    /// </summary>
     private Rigidbody m_rigidBody;
-    //holds the reference to the Character script which is on the character gameobject
+    /// <summary>
+    /// holds the reference to the Character script which is on the character gameobject
+    /// </summary>
     private Character m_character;
 
     // Use this for initialization
@@ -41,7 +53,9 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
-    //move character to the current mouse position
+    /// <summary>
+    /// move character to the current mouse position
+    /// </summary>
     public void MoveToPosition()
     {
         //set character's state to moving state
@@ -66,14 +80,18 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
-    // stop character movement when it collides with seperator
+    /// <summary>
+    /// stop character movement when it collides with seperator
+    /// </summary>
     public void StopMovement()
     {
         m_character.CurrentCharacterState = Character.CharacterState.AtBorder;
         m_rigidBody.velocity = Vector3.zero;
     }
 
-    //character should go up when user press W
+    /// <summary>
+    /// character should go up when user press W
+    /// </summary>
     public void MoveUp()
     {
         if (m_character.CurrentCharacterState == Character.CharacterState.Idle)
@@ -84,7 +102,9 @@ public class CharacterMovement : MonoBehaviour
         Debug.Log("Move Character up");
     }
 
-    //character should go down when user press S
+    /// <summary>
+    /// character should go down when user press S
+    /// </summary>
     public void MoveDown()
     {
         if (m_character.CurrentCharacterState == Character.CharacterState.Idle)
@@ -95,7 +115,9 @@ public class CharacterMovement : MonoBehaviour
         Debug.Log("Move Character Down");
     }
 
-    //character should go left when user press A
+    /// <summary>
+    /// character should go left when user press A
+    /// </summary>
     public void MoveLeft()
     {
         if (m_character.SideOfCharacter == Character.CharacterSide.Right)
@@ -120,7 +142,9 @@ public class CharacterMovement : MonoBehaviour
         Debug.Log("Move Character Left");
     }
 
-    //character should go right when user press D
+    /// <summary>
+    /// character should go right when user press D
+    /// </summary>
     public void MoveRight()
     {
         if (m_character.SideOfCharacter == Character.CharacterSide.Left)

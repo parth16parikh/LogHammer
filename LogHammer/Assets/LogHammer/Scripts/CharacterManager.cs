@@ -2,20 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//This class creates instances of both player and keeps them here in array
+/// <summary>
+/// This class creates instances of both player and keeps them here in array
+/// </summary>
 public class CharacterManager : MonoBehaviour
 {
-
-    //player side
+    /// <summary>
+    /// player side
+    /// </summary>
     [SerializeField]
     private bool m_humanPlayerShouldBeOnLeft = false;
-    //prefab of character
+    /// <summary>
+    /// prefab of character
+    /// </summary>
     [SerializeField]
     private GameObject m_characterPrefab;
-    //parent transform of both the characters
+    /// <summary>
+    /// parent transform of both the characters
+    /// </summary>
     [SerializeField]
     private Transform m_charactersParent;
-    //array which will save all the characters
+    /// <summary>
+    /// array which will save all the characters
+    /// </summary>
     private Character[] m_charactersArray;
 
     // Use this for initialization

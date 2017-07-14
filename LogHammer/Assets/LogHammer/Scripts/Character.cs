@@ -4,19 +4,25 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    //Enum which will justify that Character will be controlled by human or AI
+    /// <summary>
+    /// Enum which will justify that Character will be controlled by human or AI
+    /// </summary>
     public enum CharacterType
     {
         Human,
         AI
     }
-    //Enum declared for Character side
+    /// <summary>
+    /// Enum declared for Character side
+    /// </summary>
     public enum CharacterSide
     {
         Left,
         Right
     }
-    //enum for character state
+    /// <summary>
+    /// enum for character state
+    /// </summary>
     public enum CharacterState
     {
         Idle,
@@ -24,7 +30,9 @@ public class Character : MonoBehaviour
         AtBorder,
     }
 
-    //all the Commands for character
+    /// <summary>
+    /// all the Commands for character
+    /// </summary>
     private Command m_moveTo;
     private Command m_moveUp;
     private Command m_moveDown;
@@ -32,28 +40,43 @@ public class Character : MonoBehaviour
     private Command m_moveLeft;
     private Command m_stopMovement;
 
-    //reference to Charactermovement on gameobject
+    /// <summary>
+    /// reference to Charactermovement on gameobject
+    /// </summary>
     private CharacterMovement m_characterMovement;
-    //This enum shows that character is human or not
+    /// <summary>
+    /// This enum shows that character is human or not
+    /// </summary>
     private CharacterType typeOfCharacter;
-    //stores current state of the character
+    /// <summary>
+    /// stores current state of the character
+    /// </summary>
     private CharacterState currentCharacterState;
-    //store the value of character side (whether character is on right side or left side)
+    /// <summary>
+    /// store the value of character side (whether character is on right side or left side)
+    /// </summary>
     private CharacterSide sideOfCharacter;
 
-    //property for character side
+    /// <summary>
+    /// property for character side
+    /// </summary>
     public CharacterType TypeOfCharacter
     {
         get { return typeOfCharacter; }
         set { typeOfCharacter = value; }
     }
-    //property for character side
+
+    /// <summary>
+    /// property for character side
+    /// </summary>
     public CharacterSide SideOfCharacter
     {
         get { return sideOfCharacter; }
         set { sideOfCharacter = value; }
     }
-    //property for storing current state of character
+    /// <summary>
+    /// property for storing current state of character
+    /// </summary>
     public CharacterState CurrentCharacterState
     {
         get { return currentCharacterState; }
@@ -61,7 +84,7 @@ public class Character : MonoBehaviour
     }
 
     // Use this for initialization
-    void Start()
+    void Awake()
     {
         m_moveTo = new MoveToCommand();
         m_moveUp = new MoveUpCommand();
@@ -84,6 +107,9 @@ public class Character : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// get current command that will be applicable on character
+    /// </summary>
     private Command GetCurrentCommand()
     {
         if (Input.GetKey(KeyCode.W))
@@ -109,7 +135,9 @@ public class Character : MonoBehaviour
         return null;
     }
 
-    //detect player collision with seperater and execute stop character command
+    /// <summary>
+    /// detect player collision with seperater and execute stop character command
+    /// </summary>
     public void OnCollisionStay(Collision collision)
     {
         if (collision.collider.tag == Constant.Separator)
@@ -118,37 +146,49 @@ public class Character : MonoBehaviour
         }
     }
 
-    //execute move to command
+    /// <summary>
+    /// execute move to command
+    /// </summary>
     public void MoveToPosition()
     {
         m_characterMovement.MoveToPosition();
     }
 
-    //execute move up command
+    /// <summary>
+    /// execute move up command
+    /// </summary>
     public void MoveUp()
     {
         m_characterMovement.MoveUp();
     }
 
-    //execute move down command
+    /// <summary>
+    /// execute move down command
+    /// </summary>
     public void MoveDown()
     {
         m_characterMovement.MoveDown();
     }
 
-    //execute move left command
+    /// <summary>
+    /// execute move left command
+    /// </summary>
     public void MoveLeft()
     {
         m_characterMovement.MoveLeft();
     }
 
-    //execute move right command
+    /// <summary>
+    /// execute move right command
+    /// </summary>
     public void MoveRight()
     {
         m_characterMovement.MoveRight();
     }
 
-    //execute stop movement command
+    /// <summary>
+    /// execute stop movement command
+    /// </summary>
     public void StopMovement()
     {
         m_characterMovement.StopMovement();
