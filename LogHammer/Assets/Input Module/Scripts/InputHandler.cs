@@ -32,7 +32,7 @@ public class InputHandler : MonoBehaviour
 
     // Temperory text for testing
     [SerializeField]
-    private Text m_text;
+    private Text m_text, m_tempText;
 
     // All the threshold variables
     [SerializeField]
@@ -48,25 +48,30 @@ public class InputHandler : MonoBehaviour
     [SerializeField]
     private float m_swipeDistanceThreshold = 80f;
     [SerializeField]
-    private float m_dragHoldThreshold;
+    private float m_dragHoldThresholdMinimum = 1.5f;
     [SerializeField]
     private float m_holdThresholdMinimum = 0.7f;
     [SerializeField]
     private float m_holdThresholdMaximum = 2f;
 
     // TLTouch variables to store information regarding current and previous touches
-    private TLTouch m_currentTouch;
-    private TLTouch m_previousTouch;
+    private NonContinousTouch m_currentTouch;
+    private NonContinousTouch m_previousTouch;
+    private ContinousTouch m_continousCurrentTouch;
 
     // Declaring a delegate 
-    public delegate void InputEvents(TLTouch currentTouch);
+    public delegate void NonContinousInputEvents(NonContinousTouch currentTouch);
+    public delegate void ContinousInputEvents(ContinousTouch currentTouch);
 
     // Declare all the public Events
-    private event InputEvents tap;
-    private event InputEvents doubleTap;
-    private event InputEvents directionalSwipe;
-    private event InputEvents generalSwipe;
-    private event InputEvents hold;
+    private event NonContinousInputEvents tap;
+    private event NonContinousInputEvents doubleTap;
+    private event NonContinousInputEvents directionalSwipe;
+    private event NonContinousInputEvents generalSwipe;
+    private event NonContinousInputEvents hold;
+    private event ContinousInputEvents drag;
+
+    //private event InputEvents 
 
     // Defining all the properties
     /// <summary>
@@ -86,50 +91,59 @@ public class InputHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// Subscribe to get the Tap event. Make sure to subscribe methods with parameter "TLTouch"
+    /// Subscribe to get the drag event. Make sure to subscribe methods with parameter "ContinousTouch"
     /// </summary>
-    public InputEvents Tap
+    public ContinousInputEvents Drag
+    {
+        get { return drag; }
+        set { drag = value; }
+    }
+
+    /// <summary>
+    /// Subscribe to get the Tap event. Make sure to subscribe methods with parameter "NonContinousTouch"
+    /// </summary>
+    public NonContinousInputEvents Tap
     {
         get { return tap; }
         set { tap = value; }
     }
 
     /// <summary>
-    /// Subscribe to get the Double Tap event. Make sure to subscribe methods with parameter "TLTouch"
+    /// Subscribe to get the Double Tap event. Make sure to subscribe methods with parameter "NonContinousTouch"
     /// </summary>
-    public InputEvents DoubleTap
+    public NonContinousInputEvents DoubleTap
     {
         get { return doubleTap; }
         set { doubleTap = value; }
     }
 
     /// <summary>
-    /// Subscribe to get the Directional Swipe event. Make sure to subscribe methods with parameter "TLTouch"
+    /// Subscribe to get the Directional Swipe event. Make sure to subscribe methods with parameter "NonContinousTouch"
     /// </summary>
-    public InputEvents DirectionalSwipe
+    public NonContinousInputEvents DirectionalSwipe
     {
         get { return directionalSwipe; }
         set { directionalSwipe = value; }
     }
 
     /// <summary>
-    /// Subscribe to get the General Swipe event. Make sure to subscribe methods with parameter "TLTouch"
+    /// Subscribe to get the General Swipe event. Make sure to subscribe methods with parameter "NonContinousTouch"
     /// </summary>
-    public InputEvents GeneralSwipe
+    public NonContinousInputEvents GeneralSwipe
     {
         get { return generalSwipe; }
         set { generalSwipe = value; }
     }
 
     /// <summary>
-    /// Subscribe to get the Hold event. Make sure to subscribe methods with parameter "TLTouch"
+    /// Subscribe to get the Hold event. Make sure to subscribe methods with parameter "NonContinousTouch"
     /// </summary>
-    public InputEvents Hold
+    public NonContinousInputEvents Hold
     {
         get { return hold; }
         set { hold = value; }
     }
-    
+
     // Called right after the instance of this script is made, and before any other methods of the script
     private void Awake()
     {
@@ -139,10 +153,21 @@ public class InputHandler : MonoBehaviour
     // Use this for initialization
     public void Start()
     {
-        m_currentTouch = new TLTouch();
-        m_previousTouch = new TLTouch();
+        m_currentTouch = new NonContinousTouch();
+        m_previousTouch = new NonContinousTouch();
+        m_continousCurrentTouch = new ContinousTouch();
         if (m_enableMultiTouch)
         { Input.multiTouchEnabled = false; }
+    }
+
+    /// <summary>
+    /// Calls the drag event. All the methods susbscribed to Drag will be called.
+    /// </summary>
+    public void OnDrag()
+    {
+        Debug.Assert(Drag != null, "Drag events not subscribed");
+        if (Drag != null)
+        { Drag(m_continousCurrentTouch); }
     }
 
     /// <summary>
@@ -150,7 +175,7 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     public void OnTap()
     {
-        Debug.Assert(Tap != null, "Tap events not subsrcribed");
+        Debug.Assert(Tap != null, "Tap events not subscribed");
         if (Tap != null)
         { Tap(m_currentTouch); }
     }
@@ -160,7 +185,7 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     public void OnDoubleTap()
     {
-        Debug.Assert(DoubleTap != null, "DoubleTap events not subsrcribed");
+        Debug.Assert(DoubleTap != null, "DoubleTap events not subscribed");
         if (DoubleTap != null)
         { DoubleTap(m_currentTouch); }
     }
@@ -170,7 +195,7 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     public void OnGeneralSwipe()
     {
-        Debug.Assert(GeneralSwipe != null, "GeneralSwipe events not subsrcribed");
+        Debug.Assert(GeneralSwipe != null, "GeneralSwipe events not subscribed");
         if (GeneralSwipe != null)
         { GeneralSwipe(m_currentTouch); }
     }
@@ -180,7 +205,7 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     public void OnDirectionalSwipe()
     {
-        Debug.Assert(DirectionalSwipe != null, "DirectionalSwipe events not subsrcribed");
+        Debug.Assert(DirectionalSwipe != null, "DirectionalSwipe events not subscribed");
         if (DirectionalSwipe != null)
         { DirectionalSwipe(m_currentTouch); }
     }
@@ -190,7 +215,7 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     public void OnHold()
     {
-        Debug.Assert(Hold != null, "Hold events not subsrcribed");
+        Debug.Assert(Hold != null, "Hold events not subscribed");
         if (Hold != null)
         { Hold(m_currentTouch); }
     }
@@ -213,6 +238,16 @@ public class InputHandler : MonoBehaviour
         if (touch.phase == TouchPhase.Began)
         {
             m_currentTouch.SetTouchStartInfo(touch.position, Time.time);
+            m_continousCurrentTouch.SetTouchStartInfo(touch.position, Time.time);
+            OnDrag();
+            m_tempText.text = touch.position.ToString();
+        }
+
+        if (touch.phase == TouchPhase.Moved)
+        {
+            m_continousCurrentTouch.SetCurrentPositionAndTime(touch.position, Time.time);
+            OnDrag();
+            m_tempText.text = touch.position.ToString();
         }
 
         // Touch ends
@@ -220,13 +255,16 @@ public class InputHandler : MonoBehaviour
         {
             // Setting the properties in m_currentTouch
             m_currentTouch.SetTouchEndInfo(touch.position, Time.time);
+            m_continousCurrentTouch.SetTouchEndInfo(touch.position, Time.time);
+            OnDrag();
+            m_tempText.text = touch.position.ToString();
 
             // Calculating differences needed for carrying out comparisions
             float timeDifferenceBetweenTaps = m_currentTouch.EndTime - m_previousTouch.EndTime;
             float distanceBetweenTaps = Vector2.Distance(m_currentTouch.EndPosition, m_previousTouch.EndPosition);
 
             // Detect double tap, if any
-            
+
             if (timeDifferenceBetweenTaps <= m_doubleTapTimeThreshold && distanceBetweenTaps <= m_tapRadiusThreshold
                         && m_currentTouch.HoldDistance <= m_tapRadiusThreshold && m_previousTouch.HoldDistance <= m_tapRadiusThreshold)
             {
@@ -286,7 +324,7 @@ public class InputHandler : MonoBehaviour
                 //Directional Swipe Event
                 OnDirectionalSwipe();
             }
-            else if (m_currentTouch.HoldTime >= m_holdThresholdMinimum && m_currentTouch.HoldTime <= m_holdThresholdMaximum 
+            else if (m_currentTouch.HoldTime >= m_holdThresholdMinimum && m_currentTouch.HoldTime <= m_holdThresholdMaximum
                         && m_currentTouch.HoldDistance <= m_tapRadiusThreshold)
             {
                 m_text.text = "HOLD";
