@@ -1,17 +1,17 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// Stores all the information about a particular touch
 /// </summary>
-public class TLTouch
+public abstract class TLTouch
 {
     // Stores all the basic information about a particular touch
     private Vector2 startPosition, endPosition;
-    private float startTime, endTime, holdTime, holdDistance;
-    private Vector2 vectorDifferenceBetweenStartAndEnd;
-    private SwipeDirection swipeDirection;
+    private float startTime;
+    float endTime;
 
     // Define the properties of above private variables
     /// <summary>
@@ -24,21 +24,20 @@ public class TLTouch
     }
 
     /// <summary>
-    /// The position where the touch ended
-    /// </summary>
-    public Vector2 EndPosition
-    {
-        get { return endPosition; }
-        set { endPosition = value; }
-    }
-
-    /// <summary>
     /// The time when the touch started
     /// </summary>
     public float StartTime
     {
         get { return startTime; }
         set { startTime = value; }
+    }
+    /// <summary>
+    /// The position where the touch ended
+    /// </summary>
+    public Vector2 EndPosition
+    {
+        get { return endPosition; }
+        set { endPosition = value; }
     }
 
     /// <summary>
@@ -50,6 +49,52 @@ public class TLTouch
         set { endTime = value; }
     }
 
+    // Default constructor
+    public TLTouch()
+    {
+    }
+
+    /// <summary>
+    /// Set the values of touch start variables
+    /// </summary>
+    /// <param name="startPos">
+    /// The start position of the touch
+    /// </param>
+    /// <param name="startTime">
+    /// The start time of the touch
+    /// </param>
+    public void SetTouchStartInfo(Vector2 startPos, float startTime)
+    {
+        StartPosition = startPos;
+        StartTime = startTime;
+    }
+
+    public abstract void SetTouchEndInfo(Vector2 endPos, float endTime);
+}
+
+public class ContinousTouch : TLTouch
+{
+    Vector2 currentPosition;
+    float currentTime;
+
+    public void SetCurrentPositionAndTime(Vector2 pos, float time)
+    {
+        currentPosition = pos;
+    }
+
+    public override void SetTouchEndInfo(Vector2 endPos, float endTime)
+    {
+        EndPosition = endPos;
+        EndTime = endTime;
+    }
+}
+
+public class NonContinousTouch : TLTouch
+{
+    Vector2 vectorDifferenceBetweenStartAndEnd;
+    float holdDistance, holdTime;
+    SwipeDirection swipeDirection;
+    
     /// <summary>
     /// The vector representation between the start and the end points
     /// </summary>
@@ -86,38 +131,6 @@ public class TLTouch
         get { return swipeDirection; }
     }
 
-    // Default constructor
-    public TLTouch()
-    {
-    }
-
-    public TLTouch(TLTouch tlTouch)
-    {
-        StartPosition = tlTouch.StartPosition;
-        EndPosition = tlTouch.EndPosition;
-        StartTime = tlTouch.StartTime;
-        EndTime = tlTouch.EndTime;
-        HoldTime = tlTouch.HoldTime;
-        HoldDistance = tlTouch.HoldDistance;
-        SwipeDirection = tlTouch.SwipeDirection;
-        VectorDifferenceBetweenStartAndEnd = tlTouch.VectorDifferenceBetweenStartAndEnd;
-    }
-
-    /// <summary>
-    /// Set the values of touch start variables
-    /// </summary>
-    /// <param name="startPos">
-    /// The start position of the touch
-    /// </param>
-    /// <param name="startTime">
-    /// The start time of the touch
-    /// </param>
-    public void SetTouchStartInfo(Vector2 startPos, float startTime)
-    {
-        StartPosition = startPos;
-        StartTime = startTime;
-    }
-
     /// <summary>
     /// Set the values of touch end variables
     /// </summary>
@@ -127,7 +140,7 @@ public class TLTouch
     /// <param name="endTime">
     /// The end time of the touch
     /// </param>
-    public void SetTouchEndInfo(Vector2 endPos, float endTime)
+    public override void SetTouchEndInfo(Vector2 endPos, float endTime)
     {
         EndPosition = endPos;
         EndTime = endTime;

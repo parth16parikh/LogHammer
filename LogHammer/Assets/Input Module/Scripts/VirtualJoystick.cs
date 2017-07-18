@@ -86,14 +86,16 @@ public class VirtualJoystick : MonoBehaviour, IDragHandler, IPointerUpHandler, I
 
             // Convert the input into proper form: 0 in middle of the backgound, and upto magnitude 1 on each sides
             m_inputData = 
-                new Vector3(positionWithRespectToBackgroundImage.x * 2 + 1, 0f, positionWithRespectToBackgroundImage.y * 2 - 1);
+                new Vector3(positionWithRespectToBackgroundImage.x * Constant.IntTwo + Constant.IntOne, Constant.Zero
+                    , positionWithRespectToBackgroundImage.y * Constant.IntTwo - Constant.IntOne);
 
             // If while dragging, magnitude crosses 1, it remains 1
-            m_inputData = (m_inputData.magnitude > 1.0f) ? m_inputData.normalized : m_inputData;
+            m_inputData = (m_inputData.magnitude > Constant.One) ? m_inputData.normalized : m_inputData;
 
             // Move the joystick
-            m_joyStick.rectTransform.anchoredPosition = new Vector3(m_inputData.x * m_backGround.rectTransform.sizeDelta.x / 3, 
-                    m_inputData.z * m_backGround.rectTransform.sizeDelta.y / 3);
+            m_joyStick.rectTransform.anchoredPosition = new Vector3(
+                    m_inputData.x * m_backGround.rectTransform.sizeDelta.x / Constant.IntThree, 
+                    m_inputData.z * m_backGround.rectTransform.sizeDelta.y / Constant.IntThree);
 
             // Call the event
             if (JoystickInputEvent != null)
